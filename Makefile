@@ -35,3 +35,6 @@ bundle: \
 	${MODULE_PATH}/${LINTER}
 
 	npx ${LINTER} bundle ${OPENAPI_DOC} -o ${OPENAPI_DIR}/${bundledDocName} --ext yaml --lint
+
+pre-commit:
+	true
