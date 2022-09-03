@@ -11,5 +11,8 @@
   },
   "keywords": [
     "api"
-  ]
+  ],
+  "devDependencies": {
+    "@redocly/cli": "^1.0.0-beta.108"
+  }
 }
