@@ -1,0 +1,60 @@
+summary: 댓글 관리하기
+description: 댓글과 관련된 여러 동작을 맡습니다.
+parameters:
+  - $ref: ../../../components/parameters/IdParam.yaml
+post:
+  operationId: addComment
+  summary: 댓글 추가하기
+  description: |
+    # 댓글
+
+    특정 글에 새 댓글을 추가합니다.
+
+    ## 동작
+
+    모든 글은 속성으로 댓글의 배열(`comments`)을 가지고 있으며, 주어진 값이 없디면 `[]`으로 초기화됩니다.
+
+    그 후 사용자가 댓글을 추가하는 순서대로 배열에 댓글 객체가 추가되며, `/posts/{id}`로 특정 글을 조회할 때 해당 글이 가진 댓글 정보가 같이 전송됩니다.
+
+    글을 조회할 시 전달되는 배열은 각 댓글이 시간순으로 정렬되어 있습니다. 따라서 댓글을 글 보기 화면에 표시하려는 경우, 프런트에서 재정렬할 필요 없이 `map` 해주시면 됩니다. \
+    자세한 내용은 `/posts/{id}` 의 설명을 참고하세요.
+
+    ## 구현되지 않은 동작
+
+    해당 API의 댓글 기능은 굉장히 제한적이며, 다양한 동작을 하기 불가능합니다.
+
+     - 댓글 수정 기능이 존재하지 않습니다.
+     - 댓글 삭제 기능이 존재하지 않습니다.
+     - 댓글 알림 기능이 존재하지 않습니다.
+     - 대댓글, 또는 대대댓글 기능이 존재하지 않습니다.
+     - 댓글에 vote 기능이 존재하지 않습니다.
+     - 댓글에 페이징 기능이 존재하지 않습니다. \
+       (따라서 한번에 많은 댓글이 있다면 전부 불러와야 합니다)
+     - 댓글에 스레딩 기능이 존재하지 않습니다.
+
+     위 기능들은 현재 복잡성을 줄이기 위해 **의도적으로** 배제되었으며, 향후 추가될 계획이 없습니다.
+  tags:
+    - Post
+  requestBody:
+    description: |
+      `content`에 등록하고자 하는 댓글 내용을 적어주세요.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../components/schemas/Comment.yaml
+  responses:
+    201:
+      description: |
+        성공적으로 댓글이 추가되었습니다.
+
+        응답으로 생성된 댓글의 정보를 전달합니다.
+      content:
+        application/json:
+          schema:
+            $ref: ../../../components/schemas/Comment.yaml
+    400:
+      $ref: ../../../components/responses/BadRequest.yaml
+    401:
+      $ref: ../../../components/responses/Unauthorized.yaml
+    404:
+      $ref: ../../../components/responses/NotFound.yaml

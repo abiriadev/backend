@@ -1,0 +1,8 @@
+parameters:
+  - $ref: ../../components/parameters/IdParam.yaml
+get:
+  $ref: ./_id/get.yaml
+put:
+  $ref: ./_id/put.yaml
+delete:
+  $ref: ./_id/delete.yaml

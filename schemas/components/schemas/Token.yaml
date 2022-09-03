@@ -1,0 +1,7 @@
+type: string
+description: |
+  인증에 사용하는 API키입니다.
+
+  매 요청시마다 해당 값을 헤더로 전송해야 합니다. 기본적으로 JWT토큰입니다.
+example: |
+  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c

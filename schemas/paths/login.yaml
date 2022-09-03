@@ -1,0 +1,102 @@
+summary: 로그인하기
+description: 로그인과 관련된 동작을 다룹니다.
+post:
+  operationId: login
+  summary: 로그인 또는 회원가입
+  description: |
+    # 로그인
+
+    전달된 이름과 비밀번호에 일치하는 유저를 DB에서 찾아 로그인합니다.
+
+    만약 주어진 요청에 대응되는 유저가 없다면, 새로 생성합니다.
+    따라서 회원가입을 위한 별도의 엔드포인트가 존재하지 않습니다.
+
+    ## 응답
+
+    로그인에 실패한 경우, 401을 반환합니다.
+
+    요청을 해석할 수 없는 경우, 400을 반환합니다.
+
+    로그인이 성공한 경우, 200을 반환합니다.
+
+    ## API key
+
+    기존에 이미 있는 유저이든 생성한 유저이든, 로그인 요청이 들어올 때마다 새 API 키가 생성되어 전달됩니다.
+
+    기본적으로 [JWT](https://jwt.io)토큰이며, 페이로드에 현재 로그인한 사용자의 `id`값을 포함하고 있습니다.
+
+    본인을 인증하기 위해서는 매 요청마다 이 토큰을 `Bearer` 헤더에 넣어 함께 전달해야 합니다. \
+    그렇지 하지 않은 경우 많은 작업에서 `401`에러가 발생합니다.
+
+    `쿠키` 등을 사용하지 않는 방식이므로 안드로이드, iOS등의 모바일 클라이언트에서도 \
+    로컬 스토리지에 토큰을 저장해두는 방식 등으로 동일한 인증 방식을 사용 가능합니다.
+
+    ### 작업 종류별 토큰 요구 여부
+
+    주로 `/users/me`등 `POST`나 기타 메소드를 사용하는 작업에서 토큰을 요구하며, 서버는 이 토큰을 통해 사용자를 식별해냅니다. \
+    (그렇지 않으면 `me`가 누구인지 등을 알 수 없습니다.)
+    | Method Type | Token 필요 여부 | Note |
+    | --- | --- | --- |
+    | `GET` | false | 주로 공개된 값을 패치해옵니다. |
+    | `POST` | true | 주로 (본인 명의로) 새 값을 만듭니다. |
+    | `PUT` | true | 주로 본인이 만든 값을 수정하는 데 쓰입니다. |
+    | `DELETE` | true | 주로 본인이 만든 값을 삭제하는 데 쓰입니다. |
+    현재 유일한 예외는 `/login` 자체뿐입니다.
+
+    가장 이상적인 방법으로 매 요청마다 토큰을 전달하는 방법이 있습니다.
+
+    ### 로그아웃
+
+    세션을 사용하지 않기 때문에 별도의 로그아웃(세션 파기) 요청이 필요하지 않습니다. \
+    단순히 로컬 저장소에서 발급받은 토큰 값을 삭제하시면 됩니다.
+
+    따라서 다른 사용자로 로그인하려는 경우,
+     1. 화면에서 `로그아웃` 버튼이 눌리면 실제로 서버에 요청을 보낼 필요 없이 내부에 저장해둔 토큰 값을 삭제한 후
+     2. 사용자가 다시 `로그인` 버튼을 누르고 새 사용자 정보를 입력하면 `/login`에 요청을 보내고
+     3. 그 결과로 받은 토큰을 저장하시면 됩니다.
+  tags:
+    - Miscellaneous
+  security: []
+  requestBody:
+    description: |
+      로그인 정보를 전달합니다. \
+      이 때, 비밀번호는 평문으로 전달합니다.
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: alice
+            password:
+              $ref: ../components/schemas/Password.yaml
+  responses:
+    200:
+      description: |
+        로그인 또는 유저 생성에 성공했습니다.
+
+        `key`에는 발급된 API키가, `user`에는 유저 정보가 전달됩니다.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              key:
+                $ref: ../components/schemas/Token.yaml
+              user:
+                $ref: ../components/schemas/User.yaml
+            required:
+              - key
+              - user
+          example:
+            key: |-
+              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            user:
+              id: 6308a2c3d95ee0cf64b2e992
+              name: alice
+              createdAt: 1661493944000
+    400:
+      $ref: ../components/responses/BadRequest.yaml
+    401:
+      $ref: ../components/responses/BadRequest.yaml

@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: Invasive species report API
+  description: |
+    # 생태계 교란종 신고 API
+
+    ## 개요
+
+    이 페이지는 대한민국의 생태계 교란종 관련된 정보를 공유하고,
+    유해종 발견 정보를 전달할 수 있는 API와 그 사용법에 대해 다룹니다.
+
+    ## 주의사항
+
+    이 문서를 읽기 전에 아래 주의사항을 참고하세요:
+     - 이 문서는 아직 100% 완성되지 않았습니다. 계획에 있지만 추가되지 않았거나 구현되어 있지만 문서화되지 않은 API가 있을 수 있습니다.
+     - 이 문서에 있는 **모든 API**는 현재 모두 사용이 불가능합니다.
+     - 이 문서의 모든 설명은 한국어로 작성되어 있지만, 부득이하게 대부분의 속성, 스키마, 예시는 영어 단어가 사용되어있을 수 있습니다.
+     - 이 문서에서는 유해종/교란종, 객체/스키마 등 같은 내용을 의미하는 여러 용어가 혼용되어 쓰이고 있습니다. 맥락에 따라서 같은 단어로 이해해 주세요.
+     - [노션 페이지](https://www.notion.so/API-spec-ea03874e329b4ed587b323473fe3592d#3b3975213de94a919ad917d669f690c6)에서 더 간략한 버전의 문서를 보실 수 있습니다.
+
+    ## 문서를 읽는 방법
+
+    API의 각 엔드포인트별로 응답과 결과, 어떻게 사용하는지에 대한 내용이 상세하게 작성되어 있으며,
+    클릭을 통해 전체 문서를 펼쳐서 볼 수 있습니다.
+
+    이 페이지는 엔드포인트별 문서뿐만 아니라
+    스키마(객체 또는 타입)별로 상세한 문서가 따로 존재합니다. \
+    모든 스키마 목록과 그 문서는 `swagger-ui`의 경우 페이지의 가장 하단에 위치해 있습니다.
+  version: 0.1.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: 'external documentations: notion'
+  url: https://www.notion.so/e1ef736877fb4783a7b87042a10a2610
+servers:
+  - url: /
+    description: default endpoint
+security:
+  - JWTAuth: []
+components:
+  schemas:
+    $ref: ./components/schemas/_index.yaml
+  parameters:
+    $ref: ./components/parameters/_index.yaml
+  securitySchemes:
+    $ref: ./components/securitySchemes/_index.yaml
+  responses:
+    $ref: ./components/responses/_index.yaml
+paths:
+  /login:
+    $ref: ./paths/login.yaml
+  /users:
+    $ref: ./paths/users.yaml
+  /users/me:
+    $ref: ./paths/users/me.yaml
+  /users/me/password:
+    $ref: ./paths/users/me/password.yaml
+  /users/{id}:
+    $ref: ./paths/users/_id.yaml
+  /posts:
+    $ref: ./paths/posts.yaml
+  /posts/{id}:
+    $ref: ./paths/posts/_id.yaml
+  /posts/{id}/comments:
+    $ref: ./paths/posts/_id/comments.yaml
+  /species:
+    $ref: ./paths/species.yaml
+  /species/{id}:
+    $ref: ./paths/species/_id.yaml
+tags:
+  - name: Miscellaneous
+    description: 로그인, 유해종 목록 등 기타 API
+  - name: User
+    description: 로그인을 제외한 유저 관련 조회, 변경, 삭제 API
+  - name: Post
+    description: 글 작성, 조회, 수정, 삭제, 댓글 관련 API

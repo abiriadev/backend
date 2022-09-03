@@ -1,0 +1,14 @@
+in: query
+name: skip
+schema:
+  type: integer
+  minimum: 0
+  default: 0
+description: 결과 중 앞에서부터 얼마만큼의 항목을 생략할지를 설정합니다
+examples:
+  skipNothing:
+    summary: 결과 중 아무것도 생략하지 않습니다. 기본값입니다.
+    value: 0
+  skipFirst20:
+    summary: 응답으로 오는 항목들 중 첫 20개의 결과만 빼도록 설정합니다.
+    value: 20

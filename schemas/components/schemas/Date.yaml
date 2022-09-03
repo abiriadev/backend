@@ -1,0 +1,4 @@
+description: |
+  `UNIX timestamp` 로 표현되는 시간 자료형입니다.
+type: integer
+example: 1661493944000

@@ -1,0 +1,8 @@
+description: |
+  인증에 실패했습니다.
+
+  헤더에 적절한 토큰을 넣어 전달해 주세요.
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/HttpError.yaml

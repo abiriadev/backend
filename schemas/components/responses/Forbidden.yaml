@@ -1,0 +1,6 @@
+description: |
+  해당 객체에 접근하거나 또는 수정하거나 또는 삭제할 권한이 부족합니다.
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/HttpError.yaml

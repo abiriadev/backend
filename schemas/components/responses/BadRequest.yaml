@@ -1,0 +1,6 @@
+description: |
+  요청이 잘못되었거나 처리할 수 없습니다.
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/HttpError.yaml

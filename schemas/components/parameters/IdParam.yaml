@@ -1,0 +1,7 @@
+in: path
+name: id
+description: 찾고자 하는 특정한 id
+required: true
+schema:
+  $ref: ../schemas/ObjectId.yaml
+example: 63033b49509996e9c941b55b

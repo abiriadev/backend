@@ -1,0 +1,60 @@
+description: |
+  # 이미지
+
+  이미지를 표현하는 타입입니다.
+
+  ## 주의
+
+  **이 타입 자체가 이미지는 아닙니다.**
+
+  물론 DB는 이미지를 저장하지만,
+  이 값은 DB에 저장된 이미지를 가리키는 URL을 사용합니다.
+
+  예를 들어, `POST /posts` 를 통해 새 글을 작성할 때 이미지를 첨부했다면,
+  `GET /posts/{id}` 로 해당 글을 요청할 때 `image` 필드에
+  `{..., "url":"http://<서버 도메인>/images/<이미지 ID>"...}`
+  와 같이 이미지의 url이 포함된 이미지 객체를 받습니다.
+
+  이 때, 이미지를 불러오는 일은 여러분이 직접 하지 않고
+  브라우저나 안드로이드/iOS가 알아서 처리하는 부분입니다.
+
+  일례로 웹의 경우, `<img src="http://<서버 도메인>/images/<이미지 ID>">` 처럼
+  그냥 `src`속성에 이미지 주소를 넣으면 됩니다.
+type: object
+properties:
+  id:
+    oneOf:
+      - $ref: ./ObjectId.yaml
+    description: |
+      해당 이미지의 고유한 식별자입니다.
+
+      **주의: id는 이미지의 URL과 다릅니다**
+
+      아마 현재로썬 `<서버 주소>/images/<ID>` 를 이미지의 url로 사용하고 있지만
+      이는 항상 같도록 보장된 동작이 아닙니다.
+
+      예를 들어 id를 사용한다면 어느 순간 백엔드에서 이미지 저장 경로를 바꾸거나 \
+      CDN, fb등의 이미지 호스팅 업체를 사용하도록 바꾸었을 때 모든 이미지가 깨져 보일 수 있습니다.
+  name:
+    type: string
+    description: |
+      이미지 파일의 이름입니다.
+
+      시각장애인 등 웹 컨텐츠에 접근하기 어려운 사람들을 위해
+      `alt` 속성 등을 표시하거나 할 때 유용합니다.
+    example: suwon_bullfrog.jpg
+  url:
+    type: string
+    description: |
+      이미지를 찾을 수 있는 경로를 나타냅니다.
+
+      사실상 이 객체에서 가장 중요한 필드라고 해도 과언이 아닙니다.
+
+      이 값을 프런트엔드별로 적절한 이미지 뷰어에 넣어 주세요.
+    format: uri
+    example: https://example.com/images/630dd62072f484b2f2d8e62c
+  createdAt:
+    oneOf:
+      - $ref: ./Date.yaml
+    description: |
+      이미지가 업로드된 날짜입니다.

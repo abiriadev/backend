@@ -1,0 +1,39 @@
+operationId: addPost
+summary: 새 글 발행하기
+description: |
+  주어진 값으로 새 게시물을 만듭니다.
+
+  각 필드의 의미와 역할에 대해서는 `Post` 스키마 문서를 참고하세요.
+tags:
+  - Post
+requestBody:
+  description: |
+    등록할 글에 대한 내용을 Body에 넣어서 보내야 합니다.
+
+    `Post`의 자세한 구조와 어떤 필드가 어떤 역할인지 등에 대한 내용은
+    `Post`의 스키마 문서를 참고하세요.
+
+    사진이 포함되어 있기 때문에 요청을 보낼 형식으로 `multipart/form-data`를 사용해야 합니다.
+  content:
+    multipart/form-data:
+      schema:
+        $ref: ../../components/schemas/Post.yaml
+      encoding:
+        imageFile:
+          contentType: Image/*
+responses:
+  201:
+    description: |
+      새 포스트가 성공적으로 생성되었습니다.
+
+      응답으로 생성된 포스트의 정보를 전달합니다. \
+      만약 포스트 생성이 끝난 후 바로 해당 포스트로 이동하고 싶다면
+      결과로 온 `Post`객체의 `id`값을 사용할 수 있습니다.
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/Post.yaml
+  400:
+    $ref: ../../components/responses/BadRequest.yaml
+  401:
+    $ref: ../../components/responses/Unauthorized.yaml
