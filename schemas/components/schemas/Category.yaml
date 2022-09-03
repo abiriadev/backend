@@ -1,0 +1,19 @@
+description: |
+  # 카테고리
+
+  각각의 글이 표시될 카테고리를 뜻합니다.
+
+  모든 글은 단 하나의 카테고리에 속하며,
+  보통 그 글의 주제에 맞게 정해집니다.
+
+  ## 종류
+
+  - `report`: 유해종 신고 게시판
+  - `qa`: 질문답변(Q & A) 게시판
+  - `info`: 교란종 관련 정보 게시판
+type: string
+enum:
+  - report
+  - qa
+  - info
+example: report

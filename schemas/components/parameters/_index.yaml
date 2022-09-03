@@ -1,0 +1,27 @@
+# id parameters
+IdParam:
+  $ref: ./IdParam.yaml
+
+# common paging parameters
+Limit:
+  $ref: ./Limit.yaml
+Skip:
+  $ref: ./Skip.yaml
+
+# search parameters
+Search:
+  $ref: ./Search.yaml
+Author:
+  $ref: ./Author.yaml
+CategoryParam:
+  $ref: ./CategoryParam.yaml
+SpeciesParam:
+  $ref: ./SpeciesParam.yaml
+LocationParam:
+  $ref: ./LocationParam.yaml
+
+# sort
+SortBy:
+  $ref: ./SortBy.yaml
+SortOrder:
+  $ref: ./SortOrder.yaml

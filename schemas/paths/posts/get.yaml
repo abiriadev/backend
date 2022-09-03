@@ -1,0 +1,72 @@
+operationId: getPosts
+summary: 글 조회 및 검색
+description: |
+  # 글 조회
+
+  특정한 조건에 맞게 글들을 가져옵니다.
+
+  인터넷 게시판으로 치면 게시판에서 `F5`를 눌렀을 때 보여지는 화면에 쓰인다고 생각하시면 좋습니다.
+
+  ## 주의사항
+
+  결과는 글이 추가되면서 계속 변할 수 있습니다. \
+  아무 인자도 주지 않았을 경우 기본적으로 시간순(최신순)으로 정렬됩니다. 최신글이 아닌 다른 게 필요하다면 조건을 설정해 주세요.
+
+  결과는 배열로 전달됩니다. \
+  검색 조건에 맞는 결과가 하나도 없어 빈 배열이 나오더라도 `404`(찾을 수 없음)가 아닌 `200`(성공)으로 표시됩니다.
+
+  아무 인자 없이 사용하면 DB에서 모든 글을 가져옵니다. \
+  `limit`은 생략 가능한 파라미터이지만 모바일 앱의 데이터 보호,
+  웹사이트의 로딩 속도 최적화, DB의 부하 방지 등을 위해
+  (꼭 필요한 경우가 아닌 이상) limit을 필요한 만큼만으로 설정해 주세요.
+
+  **검색 전용 API가 따로 존재하지 않습니다.** \
+  이 엔드포인트에서 여러 조건을 사용해서 검색 기능도 수행하게 만들 수 있습니다.
+
+  ## 검색과 조건
+
+  모든 조건은 `AND`로 결합됩니다. \
+  예를 들어 `author=xx&category=report` 로 검색하는 경우, 글쓴이가 `xx`이거나 `report` 카테고리에 속한 글이 검색되는 것이 **아니라**, `xx`가 작성한 글 중에서 `report` 카테고리에 속한 글만 검색됩니다.
+
+  모든 조건은 선택사항입니다. 다만 `category`의 경우 일반적인 글 불러오기 기능에서는 항상 설정하는 것이 좋습니다. \
+  예:
+    1. 각 게시판별로 다른 뷰가 있는 경우: \
+    각 게시판의 글을 불러올 때는 `category=<현재 카테고리>` 를 사용합니다. 따라서 아무리 `F5`를 하더라도 A카테고리에는 A카테고리의 글만 목록에 보입니다.
+    2. 검색 기능을 위한 뷰를 따로 만드는 경우: \
+    검색창에서는 `category`조건을 선택사항으로 잡습니다. 따라서 A카테고리의 글과 B카테고리의 글이 섞여서 검색결과 뷰에 노출될 수 있습니다.
+
+  ### 페이징
+
+  검색용 조건과는 별개로, 어디부터 어디까지의 결과를 받을 것인지에 대한 조건도 설정할 수 있습니다.
+
+   - `limit`: 결과 갯수 제한
+   - `skip`: 앞부분 건너뛰기. 이 두 조건은 페이징 기능에 유용합니다.
+   - `sortBy`: 정렬 기준. \
+     어떤 필드를 기준으로 정렬할지를 정합니다. 기본값은 `date`(시간순 정렬)입니다.
+   - `sortOrder`: 정렬 순서. \
+     정렬을 오름차순 으로 할지 내림차순으로 할지 결정합니다.
+tags:
+  - Post
+security: []
+parameters:
+  - $ref: ../../components/parameters/Author.yaml
+  - $ref: ../../components/parameters/CategoryParam.yaml
+  - $ref: ../../components/parameters/SpeciesParam.yaml
+  - $ref: ../../components/parameters/Search.yaml
+  - $ref: ../../components/parameters/LocationParam.yaml
+  - $ref: ../../components/parameters/Limit.yaml
+  - $ref: ../../components/parameters/Skip.yaml
+  - $ref: ../../components/parameters/SortBy.yaml
+  - $ref: ../../components/parameters/SortOrder.yaml
+responses:
+  200:
+    description: |
+      글이 성공적으로 조회되었습니다
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: ../../components/schemas/PostPreview.yaml
+  400:
+    $ref: ../../components/responses/BadRequest.yaml

@@ -1,0 +1,8 @@
+BadRequest: # 400
+  $ref: ./BadRequest.yaml
+Unauthorized: #401
+  $ref: ./Unauthorized.yaml
+Forbidden: # 403
+  $ref: ./Forbidden.yaml
+NotFound: # 404
+  $ref: ./NotFound.yaml

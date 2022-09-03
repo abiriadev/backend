@@ -1,0 +1,15 @@
+type: object
+properties:
+  createdAt:
+    oneOf:
+      - $ref: ./Date.yaml
+    readOnly: true
+  author:
+    oneOf:
+      - $ref: ./User.yaml
+    readOnly: true
+  content:
+    type: string
+    example: (대충 교란종 관련된 댓글 1)
+required:
+  - content

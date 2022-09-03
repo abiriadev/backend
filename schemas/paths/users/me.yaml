@@ -1,0 +1,8 @@
+summary: 현재 로그인한 사용자를 가리키는 엔드포인트
+description: 현재 로그인한 유저의 정보를 얻거나 수정합니다
+post:
+  $ref: ./me/post.yaml
+put:
+  $ref: ./me/put.yaml
+delete:
+  $ref: ./me/delete.yaml

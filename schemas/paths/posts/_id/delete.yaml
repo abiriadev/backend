@@ -1,0 +1,24 @@
+operationId: deletePost
+summary: 자신이 쓴 글 지우기
+description: |
+  내부적으로 글 데이터를 완전히 삭제하지는 않습니다.
+tags:
+  - Post
+responses:
+  200:
+    description: |
+      성공적으로 글이 삭제되었습니다.
+
+      응답으로 삭제된 글의 정보를 전달합니다.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../components/schemas/Post.yaml
+  400:
+    $ref: ../../../components/responses/BadRequest.yaml
+  401:
+    $ref: ../../../components/responses/Unauthorized.yaml
+  403:
+    $ref: ../../../components/responses/Forbidden.yaml
+  404:
+    $ref: ../../../components/responses/NotFound.yaml

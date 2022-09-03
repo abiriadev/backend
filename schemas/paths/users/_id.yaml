@@ -1,0 +1,25 @@
+summary: 특정한 유저 데이터 가져오기
+description: id가 일치하는 유저의 정보를 가져온다.
+parameters:
+  - $ref: ../../components/parameters/IdParam.yaml
+get:
+  operationId: getUser
+  summary: id로 특정 유저 조회하기
+  description: |
+    id가 일치하는 유저를 찾아 정보를 보여줍니다.
+
+    프로필 페이지 등의 구현에 유용합니다.
+  tags:
+    - User
+  security: []
+  responses:
+    200:
+      description: id가 일치하는 유저를 찾았습니다.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/UserDetail.yaml
+    400:
+      $ref: ../../components/responses/BadRequest.yaml
+    404:
+      $ref: ../../components/responses/NotFound.yaml

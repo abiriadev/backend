@@ -1,0 +1,2 @@
+JWTAuth:
+  $ref: ./JWTAuth.yaml

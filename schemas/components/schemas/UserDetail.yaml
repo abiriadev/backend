@@ -1,0 +1,13 @@
+allOf:
+  - $ref: ./User.yaml
+  - type: object
+    properties:
+      recentPosts:
+        type: array
+        items:
+          $ref: ./PostPreview.yaml
+        description: |
+          해당 유저가 가장 최근에 작성한 글들의 목록입니다.
+
+          해당 목록은 정렬이나 검색 옵션이 없으며,
+          서버에서 이미 시간순(최신순)으로 정렬된 채 전달됩니다.

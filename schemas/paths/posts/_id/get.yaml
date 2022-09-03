@@ -1,0 +1,42 @@
+operationId: getPost
+summary: id로 특정 글 조회하기
+description: |
+  # 글 보기
+
+  id가 일치하는 글을 찾아 보여줍니다.
+
+  게시글 보기 페이지(뷰)를 구현할 때 유용합니다.
+
+  ## 검색 엔드포인트와의 차이점
+
+  `/posts`에서 나오는 간략한 `PostPreview` 스키마와는 다르게, \
+  글의 전문이나 모든 댓글 목록, 모든 이미지 목록 등 크기가 큰 데이터가 전달됩니다.
+
+  따라서 `/posts`는 검색 및 새 게시글 목록 페이지(뷰) 구현에 유용하며, \
+  `/posts/{id}`는 하나의 글을 읽으려고 할 때 유용합니다.
+
+  ### 필드별 상세
+
+  `content` 필드는 마크다운 문법이 적용되는 플레인 텍스트입니다.
+
+  `images` 필드는 별도의 배열입니다.
+
+  따라서 본문 중간중간에 이미지가 특정 위치에 삽입되어 있는 것이 아니라, \
+  본문이 따로 있고 첨부된 이미지가 따로 있는 형태입니다.
+
+  `comments` 필드는 시간순으로 정렬되어 있는 댓글의 목록입니다.
+tags:
+  - Post
+security: []
+responses:
+  200:
+    description: |
+      `id`가 일치하는 글을 찾았습니다.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../components/schemas/Post.yaml
+  400:
+    $ref: ../../../components/responses/BadRequest.yaml
+  404:
+    $ref: ../../../components/responses/NotFound.yaml

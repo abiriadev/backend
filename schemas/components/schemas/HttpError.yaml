@@ -1,0 +1,30 @@
+allOf:
+  - $ref: ./Error.yaml
+  - type: object
+    description: |
+      일반적으로 예측 가능한 범위에서 발생하는 에러들을 표현합니다.
+    properties:
+      errorCode:
+        type: integer
+        description: |
+          `HTTP` 상태 코드를 전달합니다.
+
+          **참고: 모든 api응답은 적절한 상태 코드를 반환합니다.**
+
+          이 값을 직접 읽기보단 전달받은 http 상태 코드를 직접 읽어주세요.
+        example: 401
+        enum:
+          - 400
+          - 401
+          - 403
+          - 404
+      message:
+        example: |
+          Couldn't verify the incoming request.
+          maybe you didn't send the proper token or sended an expired one.
+          please try again with a valid JWT token
+      additionalData:
+        type: 'null'
+        example: ~
+        description: |
+          `HttpError`의 경우 항상 `null`입니다.

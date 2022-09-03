@@ -1,0 +1,23 @@
+summary: id로 특정 생태계 교란종에 대한 정보 조회하기
+description: 특정 생태계 교란종에 대한 정적인 정보입니다.
+parameters:
+  - $ref: ../../components/parameters/IdParam.yaml
+get:
+  summary: id로 특정 생태계 교란종에 대한 정보 조회하기
+  description: |
+    특정한 생태계 교란종에 대한 자세한 정보를 제공합니다.
+  operationId: getOneSpecies
+  tags:
+    - Species
+  security: []
+  responses:
+    200:
+      description: 정보를 성공적으로 찾았습니다.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/Species.yaml
+    400:
+      $ref: ../../components/responses/BadRequest.yaml
+    404:
+      $ref: ../../components/responses/NotFound.yaml

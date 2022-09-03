@@ -1,0 +1,31 @@
+operationId: getMe
+summary: 현재 로그인한 사용자의 정보 가져오기
+description: |
+  현재 로그인한 사용자의 유저 정보를 가져옵니다.
+
+  정확히 말하면, 주어진 토큰와 대응되는 유저의 정보를 가져옵니다.
+
+  사실 JWT토큰도 디코딩만 하면 유저 id를 바로 알 수 있지만,
+  일반적인 방법이 아니기에 이러한 API가 존재합니다.
+
+  따라서 유저 토큰은 있지만 유저 id를 알지 못할 때 쓸 수 있는 유용한 API입니다.
+tags:
+  - User
+responses:
+  200:
+    description: |
+      유저 정보를 가져옵니다.
+
+      기본적으로 `/login` 시에 나오는 출력의 `user` 항목과 같은 내용이 들어 있습니다.
+
+      `recentPosts` 등 부가적인 '프로필 페이지에 어울리는' 정보를 얻기 위해선 `/users/{id}` 가 필요합니다.
+
+      따라서 이 API로 id를 알아낸 후에 `/users/{id}`로 요청을 보낼 수 있습니다.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../components/schemas/User.yaml
+  400:
+    $ref: ../../../components/responses/BadRequest.yaml
+  401:
+    $ref: ../../../components/responses/Unauthorized.yaml

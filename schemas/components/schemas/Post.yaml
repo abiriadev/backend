@@ -1,0 +1,7 @@
+allOf:
+  - $ref: ./PostPartial.yaml
+  - type: object
+    required:
+      - title
+      - content
+      - category

@@ -1,0 +1,6 @@
+description: |
+  일치하는 `id`를 가진 객체 또는 요청한 값을 찾지 못했습니다.
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/HttpError.yaml

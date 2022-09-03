@@ -1,0 +1,10 @@
+in: query
+name: species
+description: |
+  특정 생태계 유해종을 다루는 글에 대해서만 검색합니다.
+
+  유해종의 이름이 아니라 id를 넣어서 검색한다는 점에 주의하세요.
+
+  자세한 내용은 `Post` 스키마의 `species` 필드의 설명을 참고하세요.
+schema:
+  $ref: ../schemas/ObjectId.yaml

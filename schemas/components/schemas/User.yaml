@@ -1,0 +1,14 @@
+type: object
+description: 유저 한명의 정보를 표현합니다.
+properties:
+  id:
+    oneOf:
+      - $ref: ./ObjectId.yaml
+    readOnly: true
+  name:
+    type: string
+    example: user123
+  createdAt:
+    oneOf:
+      - $ref: ./Date.yaml
+    readOnly: true

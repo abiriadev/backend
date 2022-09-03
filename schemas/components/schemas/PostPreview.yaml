@@ -1,0 +1,115 @@
+type: object
+properties:
+  id:
+    oneOf:
+      - $ref: ./ObjectId.yaml
+    readOnly: true
+  createdAt:
+    oneOf:
+      - $ref: ./Date.yaml
+    readOnly: true
+    description: 해당 글이 언제 생성되었는지를 가리킵니다.
+  title:
+    type: string
+    description: |
+      글의 제목을 뜻합니다.
+
+      글자수에 제한은 없습니다.
+    example: 수원시에서 황소개구리를 발견했다!
+  author:
+    oneOf:
+      - $ref: ./User.yaml
+    readOnly: true
+  category:
+    $ref: ./Category.yaml
+  species:
+    oneOf:
+      - $ref: ./SpeciesPreview.yaml
+    description: &speciesDesc |
+      이 글과 관계가 있는 교란종을 가리킵니다.
+
+      예를 들어 신고글인 경우, 어떤 종을 신고하는지 구체적으로 알 수 있습니다.
+
+      질문글의 경우도 어떤 종에 관련된 질문인지 표시할 수 있습니다.
+
+      현재까지는 배열이 아니며, 하나의 글은 단 하나의 관련된 교란종만 가질 수 있습니다.
+    readOnly: true
+  speciesId:
+    oneOf:
+      - $ref: ./ObjectId.yaml
+    description: *speciesDesc
+    writeOnly: true
+  location:
+    oneOf:
+      - $ref: ./Location.yaml
+    description: |
+      # 관련 장소
+
+      해당 글이 연관되어 있는 장소입니다.
+
+      ## 사용례
+
+      가장 일반적으로는, 신고글의 경우 _해당 교란종을 발견한 장소_가 될 수 있습니다.
+
+      다른 경우로는, 교란종 관련 뉴스를 공유할 때나 의심 제보 같은 경우도 연관된 장소 정보가 있을 수 있습니다.
+
+      ## 주의사항
+
+      이 필드는 optional 입니다. \
+      즉, 연관된 장소가 있는 글도 있을 수 있고, 관련 장소가 하나도 없는 글이 있을 수 있습니다.
+
+      이 필드는 배열이 아닙니다. \
+      안타깝게도 현재까지는 하나의 글은 하나의 지리 정보만을 저장할 수 있습니다.
+
+      ## 구현
+
+      위치 정보는 일반적으로 자주 사용될 일이 많지 않습니다.
+
+      다만 맵 뷰(지도 형태의 화면)를 사용하는 경우, `sortBy=location`을 사용해서 현재 사용자의 위치에서 가까운 지역 순으로 정렬된 결과를 낼 수 있습니다.
+
+      정렬된 결과 또한 결국엔 `Post` 이기 때문에,
+      지도의 특정 부분을 클릭해서 해당 Post로 바로 이동하는 기능을 구현할 수도 있습니다.
+
+      ### 주의사항
+
+      **주의: 위치 정보를 사용자에게 보여주는 것은 백엔드가 처리하지 않습니다.**
+
+      예를 들어, 위치 정보는 그저 숫자의 객체로 전달됩니다.
+
+      글을 화면에 보여줄 때 `{"lat":37.54455880374928,"lng":127.21681957127123}` 등의 데이터를 `하남시 신장동` 등으로 알아보기 쉽게 표시하거나 지도를 그리는 일은 프런트엔드(또는 앱)에서 담당해야 합니다.
+  image:
+    oneOf:
+      - $ref: ./Image.yaml
+    readOnly: true
+    description: |
+      해당 글에 첨부된 이미지 객체입니다.
+
+      글 내용과 별도로 존재하기 때문에 \
+      게시글 뷰를 구현한다면 이미지를 상단 또는 하단 등에 따로 추가해야 합니다.
+
+      이미지 객체는 이미지 자체의 데이터를 가진 것이 아닌 실제 이미지를 가리키는 URL이 담긴 `url`이라는 필드를 가지고 있습니다. \
+      따라서 이미지를 표시하고자 하는 경우, (웹의 경우) `<img src="이미지 객체.url">` 등을 사용해 적절한 곳에 이미지 주소를 넣어주시면 됩니다.
+  imageFile:
+    type: string
+    format: binary
+    writeOnly: true
+    description: |
+      이미지 바이너리 데이터입니다.
+
+      이 필드에 업로드하고자 하는 이미지 파일을 담아서 전송하세요.
+  imageFileName:
+    type: string
+    writeOnly: true
+    description: |
+      업로드하고자 하는 이미지의 파일명입니다.
+
+      만약 이 값이 생략되면, 서버에서 적당히 랜덤한 이름을 지을 수 있습니다.
+
+      반대로 이 값은 있지만 `imageFile` 필드가 비어 있다면 이 필드의 값은 아무런 영향도 끼치지 않습니다.
+    example: suwon_bullfrog.jpg
+  commentsCount:
+    type: integer
+    readOnly: true
+    description: |
+      해당 글에 달린 댓글 수를 보여줍니다.
+    example: 5
