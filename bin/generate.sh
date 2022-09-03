@@ -1,8 +1,8 @@
 #!/bin/sh
 npx openapi-generator-cli generate \
-	--generator-name nodejs-express-server
-	--input-spec ./schemas/bundle.yaml
-	--output .
-	--verbose
+	--generator-name nodejs-express-server \
+	--input-spec ./dist/bundle.yaml \
+	--output . \
+	--verbose \
 	--skip-overwrite
 	# --dry-run

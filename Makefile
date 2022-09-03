@@ -63,3 +63,8 @@ pre-commit: \
 
 clean:
 	rm -r ${OUT_DIR}
+
+generate: \
+	${OUT_DIR}/${BUNDLE_FILE}
+
+	bin/generate.sh
