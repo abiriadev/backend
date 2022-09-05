@@ -25,6 +25,7 @@
 
 SOURCE_DIR := src
 OPENAPI_DIR := schemas
+TEST_RUNNER := jest
 COMPILER := swc
 OPENAPI_DOC := ${OPENAPI_DIR}/openapi.yaml
 OUT_DIR := dist
@@ -89,3 +90,8 @@ watch: \
 	${MODULE_PATH}/@${COMPILER}
 
 	npx ${COMPILER} ${SOURCE_DIR} -wd ${OUT_DIR}}
+
+test: \
+	${MODULE_PATH}/${TEST_RUNNER}
+
+	npx ${TEST_RUNNER}
