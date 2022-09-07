@@ -3,7 +3,7 @@ import morgan from 'morgan'
 import mainRouter from './routes'
 
 export default express()
-    .set('port', process.env.PORT || 10080)
+    .set('port', process.env.PORT || 3000)
     .use(morgan('dev'))
     .use(express.json())
     .use(
