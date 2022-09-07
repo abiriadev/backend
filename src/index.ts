@@ -1,4 +1,10 @@
-// say hello
-console.log('hello, world!')
+import dotenv from 'dotenv'
+import app from './app'
+import { once } from 'events'
 
-export default (a: number, b: number) => a + b
+dotenv.config()
+
+!(async function () {
+    const server = app.listen()
+    await once(server, 'listening')
+})()
