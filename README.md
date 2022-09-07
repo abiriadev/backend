@@ -166,13 +166,13 @@ $docker container prune -f && docker volume prune -f
 
 ```sh
 $ docker compose stop
-``````
+```
 
 종료와 함께 모든 컨테이너를 지우고 싶으시다면 다음 명령어를 사용해 주세요.
 
 ```sh
 $ docker compose down
-``````
+```
 
 ## 오류 해결
 
