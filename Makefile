@@ -83,13 +83,13 @@ generate: \
 compile: \
 	${MODULE_PATH}/@${COMPILER}
 
-	npx ${COMPILER} ${SOURCE_DIR} -d ${OUT_DIR}}
+	npx ${COMPILER} ${SOURCE_DIR} -d ${OUT_DIR}
 
 watch: \
 	${MODULE_PATH}/${WATCHER} \
 	${MODULE_PATH}/@${COMPILER}
 
-	npx ${COMPILER} ${SOURCE_DIR} -wd ${OUT_DIR}}
+	npx ${COMPILER} ${SOURCE_DIR} -wd ${OUT_DIR}
 
 test: \
 	${MODULE_PATH}/${TEST_RUNNER}
