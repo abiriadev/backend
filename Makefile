@@ -21,6 +21,7 @@
 	bundle \
 	out \
 	clean \
+	test \
 	pre-commit
 
 SOURCE_DIR := src
@@ -68,7 +69,8 @@ bundle: \
 		--lint # optional
 
 pre-commit: \
-	lint
+	lint \
+	test
 
 	true
 
