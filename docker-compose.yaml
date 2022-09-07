@@ -1,5 +1,15 @@
 version: '3.9'
 services:
+  backend:
+    container_name: api
+    restart: always
+    build:
+      dockerfile: ./Dockerfile
+    ports:
+      - 8888:80
+    depends_on:
+      - db
+  # -e "NODE_ENV=production"
   db:
     container_name: mongodb
     # NOTE: `mongo` does not exist from 6.0
@@ -28,8 +38,8 @@ services:
         read_only: true
     # pass environment variable
     # environment:
-      # - MONGO_INITDB_ROOT_USERNAME
-      # - MONGO_INITDB_ROOT_PASSWORD
+    # - MONGO_INITDB_ROOT_USERNAME
+    # - MONGO_INITDB_ROOT_PASSWORD
 volumes:
   # persistent data volume for database
   data:
