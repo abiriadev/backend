@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  db:
+    container_name: mongodb
+    # NOTE: `mongo` does not exist from 6.0
+    # use `mongosh` instead
+    image: mongo:6.0
+    restart: always
+    # replace setup arguments
+    command: --replSet rs0
+    # use default ports
+    # you can override this with environment variable
+    ports:
+      - ${DB_PORT:-27017}:27017
+    volumes:
+      # default to data
+      # you can override this volume with environment variable
+      - type: volume
+        source: ${DB_VOLUME:-data}
+        target: /data:db
+      # replace setup script
+      - type: bind
+        # NOTE: this is bind mount.
+        # docker may fail if there is no file in the given path
+        source: ./bin/docker-entrypoint-initdb.d
+        target: /docker-entrypoint-initdb.d
+        # restrict mongo not to change the contents of volume
+        read_only: true
+    # pass environment variable
+    # environment:
+      # - MONGO_INITDB_ROOT_USERNAME
+      # - MONGO_INITDB_ROOT_PASSWORD
+volumes:
+  # persistent data volume for database
+  data:
