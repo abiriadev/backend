@@ -13,6 +13,7 @@
 | Name         | Position           | Note                                                      | Link                                                                                                     |
 | ------------ | ------------------ | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | `Docker`     | container manager  | DB와 웹 서버 컨테이너 실행 및 관리                        | [`homepage`](https://docker.com/) [`github org`](https://github.com/docker)                              |
+| `ESbuild`    | bundler            | 배포시 코드 bundling, minifying, tree shacking (DCE)      | [`homepage`](https://esbuild.github.io/) [`github`](https://github.com/evanw/esbuild)                    |
 | `Express`    | backend framework  | API 구현 담당                                             | [`homepage`](https://expressjs.com/) [`github`](https://github.com/expressjs/express)                    |
 | `Git`        | version manager    | `git flow`와 유사한 워크플로 적용                         | [`homepage`](https://git-scm.com/) [`repository`](https://git.kernel.org/pub/scm/git/git.git)            |
 | `Husky`      | git hook manager   | `pre-commit` 훅 관리                                      | [`homepage`](https://typicode.github.io/husky/) [`github`](https://github.com/typicode/husky)            |
