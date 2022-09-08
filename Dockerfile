@@ -1,39 +1,40 @@
+# syntax=docker/dockerfile:1
+
 # NOTE: we use alpine version here
 # and also note, node 18 is not LTS yet
-FROM node:18-alpine
+FROM node:18-alpine AS build
 
 # sets the base path of our app
 WORKDIR /usr/src/app
 
-# move package manifest files
-# COPY package.json .
-# COPY package-lock.json .
 # move all contents
 COPY . .
-
-ENV PORT=80
-# install dependencies,
-
-# # this will omit dev dependencies.
-# RUN npm install --omit dev
 
 # install all dependencies
 RUN npm install
 
-# NOTE: you can't run tests
-# if the dev dependencies are not installed
-
 # run some tests before any mistake happens
 RUN npm test
 
-# move compiled source
-# COPY dist .
+# compile and bundle the source
+RUN npx esbuild src/index.ts \
+	--bundle \
+	--outfile=dist/bundle.js \
+	--platform=node \
+	--minify
 
-# compile the source
-RUN npx swc src -d dist
+# this is run stage
+FROM node:18-alpine AS run
 
-# EXPOSE 3000
-# run main entry
-# CMD ["node", "./index.js"]
-CMD ["node", "dist/index.js"]
-# ENTRYPOINT exec node ./dist/index.js
+# sets the working directory to
+# home directory of root
+WORKDIR /root
+
+# move bundled file
+COPY --from=build /usr/src/app/dist/bundle.js .
+
+# set basic environment variable
+ENV PORT=80
+
+# run the code
+CMD ["node", "./bundle.js"]

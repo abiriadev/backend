@@ -5,11 +5,15 @@ services:
     restart: always
     build:
       dockerfile: ./Dockerfile
+    environment:
+      # run as production mode
+      - NODE_ENV=production
+      # - PORT=80 # default
     ports:
+      # default 80, so expose as a safe port
       - 8888:80
     depends_on:
       - db
-  # -e "NODE_ENV=production"
   db:
     container_name: mongodb
     # NOTE: `mongo` does not exist from 6.0
