@@ -19,6 +19,7 @@
 	compile \
 	lint \
 	bundle \
+	bundle-oas \
 	out \
 	clean \
 	test \
@@ -30,12 +31,13 @@ TEST_RUNNER := jest
 COMPILER := swc
 OPENAPI_DOC := ${OPENAPI_DIR}/openapi.yaml
 OUT_DIR := dist
-BUNDLE_FILE_EXT := yaml
-BUNDLE_FILE := bundle.${BUNDLE_FILE_EXT}
+OAS_BUNDLE_FILE_EXT := yaml
+OAS_BUNDLE_FILE := bundle.${OAS_BUNDLE_FILE_EXT}
 MODULE_PATH := node_modules
 WATCHER := chokidar
 LINTER := @redocly/cli
 LINTER_OPTIONS := --format codeframe # stylish
+BUNDLER := esbuild
 
 all:
 
@@ -48,7 +50,7 @@ watch-oas: \
 	${MODULE_PATH}/${LINTER}
 
 	npx ${WATCHER} ${OPENAPI_DIR} \
-		-i ${OPENAPI_DIR}/${BUNDLE_FILE} \
+		-i ${OPENAPI_DIR}/${OAS_BUNDLE_FILE} \
 		--verbose \
 		-c "make push"
 
@@ -58,14 +60,14 @@ lint: \
 
 	npx ${LINTER} lint ${OPENAPI_DOC} ${LINTER_OPTIONS}
 
-bundle: \
+bundle-oas: \
 	${OPENAPI_DOC} \
 	${MODULE_PATH}/${LINTER} \
 	out
 
 	npx ${LINTER} bundle ${OPENAPI_DOC} \
-		--output ${OUT_DIR}/${BUNDLE_FILE} \
-		--ext ${BUNDLE_FILE_EXT} \
+		--output ${OUT_DIR}/${OAS_BUNDLE_FILE} \
+		--ext ${OAS_BUNDLE_FILE_EXT} \
 		--lint # optional
 
 pre-commit: \
@@ -78,7 +80,7 @@ clean:
 	rm -r ${OUT_DIR}
 
 generate: \
-	${OUT_DIR}/${BUNDLE_FILE}
+	${OUT_DIR}/${OAS_BUNDLE_FILE}
 
 	bin/generate.sh
 
@@ -97,3 +99,12 @@ test: \
 	${MODULE_PATH}/${TEST_RUNNER}
 
 	npx ${TEST_RUNNER}
+
+bundle: \
+	${MODULE_PATH}/${BUNDLER}
+
+	npx ${BUNDLER} ${SOURCE_DIR}/index.ts \
+		--bundle \
+		--outfile=${OUT_DIR}/bundle.js \
+		--platform=node \
+		--minify

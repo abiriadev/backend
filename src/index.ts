@@ -6,10 +6,12 @@ dotenv.config()
 
 !(async function () {
     const server = app.listen(app.get('port'))
+
+    // @ts-ignore
     await once(server, 'listening')
     console.log(`server listening on ${app.get('port')}`)
 
-	// this is very important for docker handling
+    // this is very important for docker handling
     process.once('SIGTERM', code => {
         console.log(`${code} received`)
         console.log('closing the server...')
