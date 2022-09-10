@@ -23,6 +23,8 @@
 	out \
 	clean \
 	test \
+	prisma-init \
+	prisma-push \
 	pre-commit
 
 SOURCE_DIR := src
@@ -108,3 +110,11 @@ bundle: \
 		--outfile=${OUT_DIR}/bundle.js \
 		--platform=node \
 		--minify
+
+prisma-init:
+
+	npx prisma init --datasource-provider mongodb
+
+prisma-push:
+
+	npx prisma db push
