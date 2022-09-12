@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+  app:
+    volumes:
+      - type: bind
+        source: .
+        target: /usr/src/app

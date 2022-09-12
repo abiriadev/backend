@@ -25,6 +25,10 @@
 	test \
 	prisma-init \
 	prisma-push \
+	compose-up \
+	compose-down \
+	compose-dev \
+	compose-prod \
 	pre-commit
 
 SOURCE_DIR := src
@@ -40,6 +44,7 @@ WATCHER := chokidar
 LINTER := @redocly/cli
 LINTER_OPTIONS := --format codeframe # stylish
 BUNDLER := esbuild
+PROJECT_NAME := eco3s
 
 all:
 
@@ -118,3 +123,25 @@ prisma-init:
 prisma-push:
 
 	npx prisma db push
+
+compose-up:
+
+	docker compose -p ${PROJECT_NAME} up -d --build
+
+compose-down:
+	
+	docker compose -p ${PROJECT_NAME} down -t 1
+
+compose-dev:
+
+	docker compose -p ${PROJECT_NAME} \
+		-f ./docker-compose.yaml \
+		-f ./dev.yaml \
+		up -d --build
+
+compose-prod:
+
+	docker compose -p ${PROJECT_NAME} \
+		-f ./docker-compose.yaml \
+		-f ./production.yaml \
+		up -d --build

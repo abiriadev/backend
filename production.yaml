@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  app:
+    # always keep server up
+    restart: always
+    build:
+      context: .
+      # bundle all code
+      target: publish
+    environment:
+      # run as production mode
+      - NODE_ENV=production
+  db:
+    restart: always
