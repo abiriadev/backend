@@ -28,7 +28,7 @@ COPY ./prisma ./prisma
 RUN ["npx", "prisma", "generate"]
 
 # copy etc files
-COPY ./.swcrc ./
+COPY ./.swcrc ./jest.config.js ./
 
 # copy source directory
 COPY ./src ./src

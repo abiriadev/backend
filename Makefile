@@ -81,9 +81,9 @@ bundle-oas: \
 pre-commit: \
 	lint \
 	docker-lint \
+	test \
 	compose-prod \
-	compose-down \
-	test
+	compose-down
 
 	true
 
@@ -107,9 +107,13 @@ watch: \
 	npx ${COMPILER} ${SOURCE_DIR} -wd ${OUT_DIR}
 
 test: \
-	${MODULE_PATH}/${TEST_RUNNER}
+	${MODULE_PATH}/${TEST_RUNNER} \
+	compose-up
 
-	npx ${TEST_RUNNER}
+	docker compose -p ${PROJECT_NAME} run \
+		--tty=false \
+		--interactive=false \
+		app npx ${TEST_RUNNER}
 
 bundle: \
 	${MODULE_PATH}/${BUNDLER}
