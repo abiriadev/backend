@@ -29,6 +29,7 @@
 	compose-down \
 	compose-dev \
 	compose-prod \
+	docker-lint \
 	pre-commit
 
 SOURCE_DIR := src
@@ -79,6 +80,9 @@ bundle-oas: \
 
 pre-commit: \
 	lint \
+	docker-lint \
+	compose-prod \
+	compose-down \
 	test
 
 	true
@@ -145,3 +149,8 @@ compose-prod:
 		-f ./docker-compose.yaml \
 		-f ./production.yaml \
 		up -d --build
+
+docker-lint:
+
+	npx dockerfilelint Dockerfile ./mongodb.Dockerfile
+	docker run --rm -i hadolint/hadolint < Dockerfile
