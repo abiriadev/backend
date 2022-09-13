@@ -167,3 +167,6 @@ dotenv-linter:
 		-v $(pwd):/app \
 		-w /app dotenvlinter/dotenv-linter
 
+db-local:
+
+	docker run --rm -v eco3s_data:/data/db -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=1234' -e 'MONGO_REPLICA_HOST=localhost' -e 'MONGO_REPLICA_PORT=27017' -p 27017:27017 -d eco3s-db:latest
