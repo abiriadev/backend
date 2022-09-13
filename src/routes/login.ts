@@ -5,7 +5,7 @@ import express from 'express'
 
 export default express.Router().post('/', async (req, res) => {
     // first check whether the user is already exist or not
-    let user = await prisma.user.findUnique({
+    let existingUser = await prisma.user.findUnique({
         where: {
             // find by name, not id
             name: req.body.name,
@@ -13,13 +13,13 @@ export default express.Router().post('/', async (req, res) => {
     })
 
     // if user is not null, that means the user has been already exist
-    if (user !== null) {
+    if (existingUser !== null) {
         // compare the given password
         const isMatch = await bcrypt.compare(
             // plaintext
             req.body.password as string,
             // hash
-            user.password as string,
+            existingUser.password as string,
         )
 
         if (!isMatch) {
@@ -40,17 +40,20 @@ export default express.Router().post('/', async (req, res) => {
         })
 
         // override user, which is null here
-        user = newUser
+        existingUser = newUser
     }
 
     // generate new access token
     const token = jwt.sign(
         {
             // NOTE: there is only one payload property, the user id.
-            _id: user.id,
+            _id: existingUser.id,
         },
         process.env.JWT_SECRET,
     )
+
+    // remove password information from result
+    const { password, ...user } = existingUser
 
     // final response
     res.json({

@@ -50,12 +50,15 @@ describe('api test', () => {
 
             expect(res.status).toEqual(200)
             expect(res.body.user.name).toEqual(newUser.name)
+            expect(res.body?.user).not.toHaveProperty('password')
 
             userId = res.body.user.id
             token = res.body.key
         })
 
         it('get all users', async () => {
+            expect(userId).not.toBeNull()
+
             const res = await request.get('/users')
 
             expect(res.body).toHaveLength(1)
@@ -63,10 +66,11 @@ describe('api test', () => {
             ;['id', 'createdAt', 'updatedAt'].map(p =>
                 expect(res.body?.[0]).toHaveProperty(p),
             )
+            expect(res.body?.[0]).not.toHaveProperty('password')
         })
 
         it('get specific user', async () => {
-            console.log('id:', userId)
+            expect(userId).not.toBeNull()
 
             const res = await request.get(`/users/${userId}`)
 
@@ -75,6 +79,7 @@ describe('api test', () => {
             ;['id', 'createdAt', 'updatedAt'].map(p =>
                 expect(res.body).toHaveProperty(p),
             )
+            expect(res.body).not.toHaveProperty('password')
 
             expect(res.body.id).toBe(userId)
         })
@@ -82,6 +87,8 @@ describe('api test', () => {
         let postId = null
 
         it('create a post', async () => {
+            expect(userId).not.toBeNull()
+
             const res = await request
                 .post('/posts')
                 .set('Authorization', `Bearer ${token}`)
@@ -95,10 +102,13 @@ describe('api test', () => {
             expect(res.body.title).toBe(newPost.title)
             expect(res.body.content).toBe(newPost.content)
             expect(res.body.category).toBe(newPost.category)
-            expect(res.body.authorId).toBe(userId)
+            // expect(res.body.authorId).toBe(userId)
             ;['id', 'createdAt', 'updatedAt'].map(p =>
                 expect(res.body).toHaveProperty(p),
             )
+			console.log(res.body)
+            expect(res.body.author.name).toBe(newUser.name)
+            expect(res.body.author).not.toHaveProperty('password')
 
             postId = res.body.id
         })
@@ -111,16 +121,22 @@ describe('api test', () => {
         })
 
         it('get specific post', async () => {
+            expect(userId).not.toBeNull()
+            expect(postId).not.toBeNull()
+
             const res = await request.get(`/posts/${postId}`)
 
             expect(res.status).toBe(200)
             expect(res.body.title).toBe(newPost.title)
             expect(res.body.content).toBe(newPost.content)
             expect(res.body.category).toBe(newPost.category)
-            expect(res.body.authorId).toBe(userId)
+            // expect(res.body.authorId).toBe(userId)
+            expect(res.body.author).not.toHaveProperty('password')
         })
 
         it('show recent posts', async () => {
+            expect(userId).not.toBeNull()
+
             const res = await request.get(`/users/${userId}`)
 
             expect(res.status).toBe(200)
@@ -163,11 +179,14 @@ describe('api test', () => {
                     ),
                 )._id,
             ).toEqual(res.body.user.id)
+            expect(res.body?.user).not.toHaveProperty('password')
 
             userId = res.body.user.id
         })
 
         it('login with the user', async () => {
+            expect(userId).not.toBeNull()
+
             const res = await request.post('/login').send({
                 name: newUser.name,
                 password: newUser.password,
@@ -176,6 +195,7 @@ describe('api test', () => {
             expect(res.status).toBe(200)
             expect(res.body.user.name).toBe(newUser.name)
             expect(res.body.user.id).toBe(userId)
+            expect(res.body?.user).not.toHaveProperty('password')
         })
     })
 })

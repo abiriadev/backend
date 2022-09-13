@@ -12,7 +12,14 @@ export default express
     })
     .use('/login', loginRouter)
     .get('/users', async (req, res) => {
-        const r = await prisma.user.findMany()
+        const r = await prisma.user.findMany({
+            select: {
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                name: true,
+            },
+        })
         res.json(r)
     })
     .post('/users', async (req, res) => {
@@ -22,6 +29,12 @@ export default express
                 // password: Buffer.from(req.body.password),
                 password: req.body.password,
             },
+            select: {
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                name: true,
+            },
         })
         res.json(r)
     })
@@ -30,9 +43,16 @@ export default express
             where: {
                 id: req.params.id,
             },
-            include: {
+            select: {
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                name: true,
                 recentPosts: true,
             },
+            // include: {
+            //     recentPosts: true,
+            // },
         })
 
         res.json(user)
@@ -47,6 +67,22 @@ export default express
             where: {
                 id: req.params.id,
             },
+            select: {
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                title: true,
+                content: true,
+                category: true,
+                author: {
+                    select: {
+                        id: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        name: true,
+                    },
+                },
+            },
         })
 
         res.json(post)
@@ -58,6 +94,22 @@ export default express
                 content: req.body.content,
                 category: req.body.category,
                 authorId: req.user['_id'],
+            },
+            select: {
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                title: true,
+                content: true,
+                category: true,
+                author: {
+                    select: {
+                        id: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        name: true,
+                    },
+                },
             },
         })
 
