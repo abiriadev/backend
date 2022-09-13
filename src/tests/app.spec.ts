@@ -1,7 +1,6 @@
 import supertest from 'supertest'
-import app from './app'
-import prisma from './prisma'
-import jwt from 'jsonwebtoken'
+import app from '../app'
+import prisma from '../prisma'
 
 const request = supertest(app)
 
@@ -106,7 +105,7 @@ describe('api test', () => {
             ;['id', 'createdAt', 'updatedAt'].map(p =>
                 expect(res.body).toHaveProperty(p),
             )
-			console.log(res.body)
+            console.log(res.body)
             expect(res.body.author.name).toBe(newUser.name)
             expect(res.body.author).not.toHaveProperty('password')
 
@@ -196,6 +195,136 @@ describe('api test', () => {
             expect(res.body.user.name).toBe(newUser.name)
             expect(res.body.user.id).toBe(userId)
             expect(res.body?.user).not.toHaveProperty('password')
+        })
+    })
+
+    describe('error test', () => {
+        beforeAll(async () => {
+            await prisma.post.deleteMany()
+            await prisma.user.deleteMany()
+            console.log('cleaned up database')
+        })
+
+        const newUser = {
+            name: 'cute localhost',
+            password: '3773189',
+        }
+
+        const newPost = {
+            title: 'new turtle',
+            content: 'qrqererqreqrsdfghf',
+            category: 'qa',
+        }
+
+        const ctx: {
+            userId: null | string
+            postId: null | string
+            token: null | string
+        } = {
+            userId: null,
+            postId: null,
+            token: null,
+        }
+
+        it('creat new user', async () => {
+            const res = await request.post('/login').send({
+                name: newUser.name,
+                password: newUser.password,
+            })
+
+            expect(res.status).toBe(200)
+            expect(res.body).toHaveProperty('key')
+            expect(res.body.user).toHaveProperty('id')
+
+            ctx.token = res.body.key
+            ctx.userId = res.body.user.id
+        })
+
+        it('must throw error when user try to create new account with same name', async () => {
+            const res = await request.post('/login').send({
+                name: newUser.name,
+                password: newUser.password + '%', // password may differ
+            })
+
+            expect(res.status).toBe(401)
+            expect(res.body.errorName).toBe(
+                'PasswordIncorrectOrUserAlreadyExist',
+            )
+        })
+
+        it('create new post', async () => {
+            expect(ctx.userId).not.toBeNull()
+            expect(ctx.token).not.toBeNull()
+
+            const res = await request
+                .post('/posts')
+                .set('Authorization', `Bearer ${ctx.token}`)
+                .send(newPost)
+
+            expect(res.status).toBe(200)
+            expect(res.body.author.id).toBe(ctx.userId)
+            expect(res.body).toHaveProperty('id')
+
+            ctx.postId = res.body.id
+        })
+
+        it('throw 401 when invalid token has been given', async () => {
+            expect(ctx.userId).not.toBeNull()
+
+            const res = await request
+                .post('/posts')
+                .set('Authorization', `Bearer ${'mY cUsToM tOkEn348'}`)
+                .send(newPost)
+
+            expect(res.status).toBe(401)
+            expect(res.body.errorName).toBe('TokenInvalid')
+        })
+
+        it("must give user's profile", async () => {
+            expect(ctx.userId).not.toBeNull()
+            expect(ctx.postId).not.toBeNull()
+
+            const res = await request.get(`/users/${ctx.userId}`)
+
+            expect(res.status).toBe(200)
+            expect(res.body.id).toBe(ctx.userId)
+            expect(res.body.recentPosts?.[0]?.id).toBe(ctx.postId)
+        })
+
+        it('must throw 400 error when request malformed', async () => {
+            const res = await request.get(`/users/${'34378lol'}`)
+
+            expect(res.status).toBe(400)
+            expect(res.body.errorName).toBe('RequestInvalid')
+        })
+
+        it('must throw 404 error when there is no such user with given id', async () => {
+            const res = await request.get(
+                `/users/${'53209bb2bfe0ccea91ef5d11'}`,
+            )
+
+            expect(res.status).toBe(404)
+            expect(res.body.errorName).toBe('UserNotFound')
+        })
+
+        it('must give post data with given id', async () => {
+            expect(ctx.userId).not.toBeNull()
+            expect(ctx.postId).not.toBeNull()
+
+            const res = await request.get(`/posts/${ctx.postId}`)
+
+            expect(res.status).toBe(200)
+            expect(res.body.id).toBe(ctx.postId)
+            expect(res.body.author.id).toBe(ctx.userId)
+        })
+
+        it('must throw 404 error when there is no such post with given name', async () => {
+            const res = await request.get(
+                `/posts/${'53209bb2bfe0ccea91ef5d11'}`,
+            )
+
+            expect(res.status).toBe(404)
+            expect(res.body.errorName).toBe('PostNotFound')
         })
     })
 })

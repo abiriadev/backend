@@ -26,7 +26,7 @@ describe('check JWT token', () => {
 
     it('must throw error when invalid has been given', () => {
         try {
-            const _ = jwt.verify('hello world!', JWT_SECRET)
+            jwt.verify('hello world!', JWT_SECRET)
         } catch (e) {
             expect(e).toBeInstanceOf(jwt.JsonWebTokenError)
         }
@@ -34,7 +34,7 @@ describe('check JWT token', () => {
 
     it('must throw error when different key has been used to verify', () => {
         try {
-            const _ = jwt.verify(token, 'qwerty')
+            jwt.verify(token, 'qwerty')
         } catch (e) {
             expect(e).toBeInstanceOf(jwt.JsonWebTokenError)
         }

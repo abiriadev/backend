@@ -2,8 +2,9 @@ import prisma from '../prisma'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import express from 'express'
+import ResponseError from '../class/ResponseError'
 
-export default express.Router().post('/', async (req, res) => {
+export default express.Router().post('/', async (req, res, next) => {
     // first check whether the user is already exist or not
     let existingUser = await prisma.user.findUnique({
         where: {
@@ -23,8 +24,15 @@ export default express.Router().post('/', async (req, res) => {
         )
 
         if (!isMatch) {
-            // throw error to the next middleware
-            return new Error('password does not matching')
+            // throw error when password does not match
+            return next(
+                new ResponseError({
+                    status: 401,
+                    message: `your password does not match with stored one.\nit seems 1. you lost or mistyped your password, or\n2. you are tring to create new account, but there is already a user with the same name.\nin case of 2, please try again with different name.`,
+                    action: 'login',
+                    errorName: 'PasswordIncorrectOrUserAlreadyExist',
+                }),
+            )
         }
     } else {
         // hashing process

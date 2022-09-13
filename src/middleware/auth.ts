@@ -1,5 +1,6 @@
-import express from 'express'
+import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import ResponseError from '../class/ResponseError'
 
 declare global {
     namespace Express {
@@ -9,19 +10,28 @@ declare global {
     }
 }
 
-export default async (
-    req: express.Request,
-    res: express.Response,
-    next: any,
-) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization']
     const token = authHeader?.split(' ')?.[1]
 
     if (token == null) return res.sendStatus(401)
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string)
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string)
+        req.user = decoded
 
-    req.user = decoded
-
-    next()
+        next()
+    } catch (err) {
+        if (err instanceof jwt.JsonWebTokenError) {
+            next(
+                new ResponseError({
+                    status: 401,
+                    message: 'your token is invalid or malformed',
+                    errorName: 'TokenInvalid',
+                }),
+            )
+        } else {
+            next(err)
+        }
+    }
 }

@@ -1,6 +1,8 @@
 import express from 'express'
 import morgan from 'morgan'
 import mainRouter from './routes'
+import errorLogger from './middleware/errorLogger'
+import errorHandler from './middleware/errorResponse'
 
 export default express()
     .set('port', process.env.PORT || 3000)
@@ -12,18 +14,5 @@ export default express()
         }),
     )
     .use(mainRouter)
-    .use((req, res, next) => {
-        const error = new Error(`${req.method} ${req.url} router not found`)
-
-        // error.status = 404
-        next(error)
-    })
-    .use((err: any, req, res, next) => {
-        res.status(500)
-
-        if (process.env.NODE_ENV !== 'production') {
-            res.json(JSON.stringify(err))
-        } else {
-            res.end()
-        }
-    })
+    .use(errorLogger)
+    .use(errorHandler)
