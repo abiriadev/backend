@@ -1,5 +1,7 @@
 import express from 'express'
 import prisma from '../prisma'
+import loginRouter from './login'
+import auth from '../middleware/auth'
 
 export default express
     .Router()
@@ -8,6 +10,7 @@ export default express
             message: 'hello',
         })
     })
+    .use('/login', loginRouter)
     .get('/users', async (req, res) => {
         const r = await prisma.user.findMany()
         res.json(r)
@@ -16,7 +19,8 @@ export default express
         const r = await prisma.user.create({
             data: {
                 name: req.body.name,
-                password: Buffer.from(req.body.password),
+                // password: Buffer.from(req.body.password),
+                password: req.body.password,
             },
         })
         res.json(r)
@@ -47,18 +51,13 @@ export default express
 
         res.json(post)
     })
-    .post('/posts', async (req, res) => {
+    .post('/posts', auth, async (req, res) => {
         const post = await prisma.post.create({
             data: {
                 title: req.body.title,
                 content: req.body.content,
                 category: req.body.category,
-                authorId: req.body.author,
-                // author: {
-                //     connect: {
-                //         id: req.body.author,
-                //     },
-                // },
+                authorId: req.user['_id'],
             },
         })
 

@@ -17,7 +17,7 @@ model User {
   /// the user's nickname, required when login
   name     String @unique
   /// hashed password of the user
-  password Bytes
+  password String
 
   // relations
   /// list of posts whose author is this user

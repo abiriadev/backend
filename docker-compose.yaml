@@ -17,6 +17,7 @@ services:
       # use external DB url,
       # instead of localhost
       - DATABASE_URL=${DATABASE_URL_PROD}
+      - JWT_SECRET
       # - PORT=80 # default
     ports:
       # default 80, so expose it to safe port
