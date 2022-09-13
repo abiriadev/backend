@@ -3,3 +3,4 @@ bundle.yaml
 /dist
 /package-lock.json
 .env
+/public/prisma

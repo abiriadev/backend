@@ -8,6 +8,11 @@ generator client {
   binaryTargets = ["native", "linux-musl"]
 }
 
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "../public/prisma"
+}
+
 model User {
   // basics
   id        String   @id @default(auto()) @map("_id") @db.ObjectId

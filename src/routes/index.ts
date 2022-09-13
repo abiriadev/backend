@@ -2,6 +2,7 @@ import express from 'express'
 import prisma from '../prisma'
 import loginRouter from './login'
 import auth from '../middleware/auth'
+import path from 'path'
 
 export default express
     .Router()
@@ -11,6 +12,12 @@ export default express
         })
     })
     .use('/login', loginRouter)
+    .use(
+        '/prisma',
+        express.static(
+            path.join(process.env.WORKDIR ?? process.cwd(), 'public/prisma'),
+        ),
+    )
     .get('/users', async (req, res) => {
         const r = await prisma.user.findMany({
             select: {
