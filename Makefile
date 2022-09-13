@@ -80,6 +80,7 @@ bundle-oas: \
 
 pre-commit: \
 	lint \
+	dotenv-linter \
 	docker-lint \
 	test \
 	compose-prod \
@@ -158,3 +159,11 @@ docker-lint:
 
 	npx dockerfilelint Dockerfile ./mongodb.Dockerfile
 	docker run --rm -i hadolint/hadolint < Dockerfile
+
+dotenv-linter:
+
+	docker run \
+		--rm \
+		-v $(pwd):/app \
+		-w /app dotenvlinter/dotenv-linter
+
