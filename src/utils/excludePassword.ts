@@ -1,16 +1,16 @@
 export const basics = {
-    id: true,
-    createdAt: true,
-    updatedAt: true,
+	id: true,
+	createdAt: true,
+	updatedAt: true,
 }
 
 export const excludePassword = {
-    ...basics,
-    name: true,
+	...basics,
+	name: true,
 }
 
 export const excludeContent = {
-    ...basics,
-    title: true,
-    category: true,
+	...basics,
+	title: true,
+	category: true,
 }

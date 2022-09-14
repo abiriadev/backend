@@ -5,18 +5,18 @@ import { once } from 'events'
 dotenv.config()
 
 !(async function () {
-    const server = app.listen(app.get('port'))
+	const server = app.listen(app.get('port'))
 
-    // @ts-ignore
-    await once(server, 'listening')
-    console.log(`server listening on ${app.get('port')}`)
+	// @ts-ignore
+	await once(server, 'listening')
+	console.log(`server listening on ${app.get('port')}`)
 
-    // this is very important for docker handling
-    process.once('SIGTERM', code => {
-        console.log(`${code} received`)
-        console.log('closing the server...')
-        server.close()
-        console.log('exit the process')
-        process.exit(0)
-    })
+	// this is very important for docker handling
+	process.once('SIGTERM', code => {
+		console.log(`${code} received`)
+		console.log('closing the server...')
+		server.close()
+		console.log('exit the process')
+		process.exit(0)
+	})
 })()
