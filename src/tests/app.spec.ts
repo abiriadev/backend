@@ -33,6 +33,7 @@ describe('api test', () => {
         }
 
         beforeAll(async () => {
+            await prisma.comment.deleteMany()
             await prisma.post.deleteMany()
             await prisma.user.deleteMany()
             console.log('cleaned up database')
@@ -151,6 +152,7 @@ describe('api test', () => {
         }
 
         beforeAll(async () => {
+            await prisma.comment.deleteMany()
             await prisma.post.deleteMany()
             await prisma.user.deleteMany()
             console.log('cleaned up database')
@@ -216,15 +218,21 @@ describe('api test', () => {
             category: 'qa',
         }
 
+        type Id = string
+
         const ctx: {
-            userId: null | string
-            postId: null | string
-            token: null | string
+            userId: null | Id
+            postId: null | Id
+            token: null | Id
+            comments: Array<Id>
         } = {
             userId: null,
             postId: null,
             token: null,
+            comments: [],
         }
+
+        const FakeId: Id = '53209bb2bfe0ccea91ef5d11'
 
         it('creat new user', async () => {
             const res = await request.post('/login').send({
@@ -299,9 +307,7 @@ describe('api test', () => {
         })
 
         it('must throw 404 error when there is no such user with given id', async () => {
-            const res = await request.get(
-                `/users/${'53209bb2bfe0ccea91ef5d11'}`,
-            )
+            const res = await request.get(`/users/${FakeId}`)
 
             expect(res.status).toBe(404)
             expect(res.body.errorName).toBe('UserNotFound')
@@ -319,12 +325,143 @@ describe('api test', () => {
         })
 
         it('must throw 404 error when there is no such post with given name', async () => {
-            const res = await request.get(
-                `/posts/${'53209bb2bfe0ccea91ef5d11'}`,
-            )
+            const res = await request.get(`/posts/${FakeId}`)
 
             expect(res.status).toBe(404)
             expect(res.body.errorName).toBe('PostNotFound')
+        })
+
+        for (const comment of [
+            'first comment!',
+            'second comment!',
+            'asdf! :D',
+        ]) {
+            it('must add new comment to post', async () => {
+                expect(ctx.postId).not.toBeNull()
+                expect(ctx.token).not.toBeNull()
+
+                const res = await request
+                    .post(`/posts/${ctx.postId}/comments`)
+                    .set('Authorization', `Bearer ${ctx.token}`)
+                    .send({
+                        content: comment,
+                    })
+
+                expect(res.status).toBe(200)
+                expect(res.body.postId).toBe(ctx.postId)
+                // expect(res.body.parentId).toBeNull()
+
+                ctx.comments.push(res.body.id)
+            })
+        }
+
+        it('must throw 404 error when the post not found with given id', async () => {
+            expect(ctx.token).not.toBeNull()
+
+            const res = await request
+                .post(`/posts/${FakeId}/comments`)
+                .set('Authorization', `Bearer ${ctx.token}`)
+                .send({
+                    content: '1234',
+                })
+
+            expect(res.status).toBe(404)
+            expect(res.body.errorName).toBe('PostDoesNotExist')
+        })
+
+        it('must return comment tree', async () => {
+            expect(ctx.postId).not.toBeNull()
+
+            const res = await request.get(`/posts/${ctx.postId}`)
+
+            expect(res.status).toBe(200)
+            expect(res.body.comments).toHaveLength(3)
+        })
+
+        it('must throw error when access to unavailable endpoint', async () => {
+            const res = await request.get('/login')
+
+            expect(res.status).toBe(400)
+            expect(res.body.errorName).toBe('WrongEndpoint')
+        })
+
+        it('must throw error when required parameters are missing', async () => {
+            const res = await request.post('/login').send({
+                password: newUser.password,
+            })
+
+            expect(res.status).toBe(400)
+            expect(res.body.errorName).toBe('FieldRequired')
+        })
+
+        it('must throw error when required parameters are missing', async () => {
+            const res = await request.post('/login').send({
+                name: newUser.name,
+            })
+
+            expect(res.status).toBe(400)
+            expect(res.body.errorName).toBe('FieldRequired')
+        })
+
+        it('must throw error when required parameters are missing', async () => {
+            expect(ctx.token).not.toBeNull()
+
+            const res = await request
+                .post('/posts')
+                .set('Authorization', `Bearer ${ctx.token}`)
+                .send({
+                    content: newPost.content,
+                    category: newPost.category,
+                })
+
+            expect(res.status).toBe(400)
+            expect(res.body.errorName).toBe('FieldRequired')
+        })
+
+        it('must throw error when required parameters are missing', async () => {
+            expect(ctx.token).not.toBeNull()
+
+            const res = await request
+                .post('/posts')
+                .set('Authorization', `Bearer ${ctx.token}`)
+                .send({
+                    title: newPost.title,
+                    category: newPost.category,
+                })
+
+            expect(res.status).toBe(400)
+            expect(res.body.errorName).toBe('FieldRequired')
+        })
+
+        it('must throw error when required parameters are missing', async () => {
+            expect(ctx.token).not.toBeNull()
+
+            const res = await request
+                .post('/posts')
+                .set('Authorization', `Bearer ${ctx.token}`)
+                .send({
+                    title: newPost.title,
+                    content: newPost.content,
+                })
+
+            expect(res.status).toBe(400)
+            expect(res.body.errorName).toBe('FieldRequired')
+        })
+
+        it('must throw error when required parameters are missing', async () => {
+            expect(ctx.token).not.toBeNull()
+            expect(ctx.postId).not.toBeNull()
+
+            const res = await request
+                .post(`/posts/${ctx.postId}/comments`)
+                .set('Authorization', `Bearer ${ctx.token}`)
+                .send({
+                    // content: 'new comment'
+                })
+
+            expect(res.status).toBe(400)
+            console.log(res.body)
+            expect(res.body.errorName).toBe('FieldRequired')
         })
     })
 })

@@ -26,7 +26,8 @@ model User {
 
   // relations
   /// list of posts whose author is this user
-  recentPosts Post[]
+  recentPosts   Post[]
+  recentComment Comment[]
 }
 
 model Post {
@@ -40,8 +41,25 @@ model Post {
   category Category
 
   // relations
+  author   User      @relation(fields: [authorId], references: [id])
+  authorId String    @db.ObjectId
+  comments Comment[]
+}
+
+model Comment {
+  // basics
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// the text content of single comment
+  content String
+
+  // relations
   author   User   @relation(fields: [authorId], references: [id])
   authorId String @db.ObjectId
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   String @db.ObjectId
 }
 
 /// represents where the post belongs to

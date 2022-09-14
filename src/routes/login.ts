@@ -3,8 +3,31 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import express from 'express'
 import ResponseError from '../class/ResponseError'
+import { dateMapper } from '../utils/mapRecurse'
 
 export default express.Router().post('/', async (req, res, next) => {
+    if (req.body.name === undefined) {
+        return next(
+            new ResponseError({
+                status: 400,
+                message: 'field `name` required',
+                errorName: 'FieldRequired',
+                action: 'login',
+            }),
+        )
+    }
+
+    if (req.body.password === undefined) {
+        return next(
+            new ResponseError({
+                status: 400,
+                message: 'field `password` required',
+                errorName: 'FieldRequired',
+                action: 'login',
+            }),
+        )
+    }
+
     // first check whether the user is already exist or not
     let existingUser = await prisma.user.findUnique({
         where: {
@@ -18,9 +41,9 @@ export default express.Router().post('/', async (req, res, next) => {
         // compare the given password
         const isMatch = await bcrypt.compare(
             // plaintext
-            req.body.password as string,
+            req.body.password,
             // hash
-            existingUser.password as string,
+            existingUser.password,
         )
 
         if (!isMatch) {
@@ -64,8 +87,10 @@ export default express.Router().post('/', async (req, res, next) => {
     const { password, ...user } = existingUser
 
     // final response
-    res.json({
-        key: token,
-        user,
-    })
+    res.json(
+        dateMapper({
+            key: token,
+            user,
+        }),
+    )
 })

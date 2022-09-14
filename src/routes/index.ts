@@ -3,6 +3,7 @@ import loginRouter from './login'
 import path from 'path'
 import usersRouter from './users'
 import postsRouter from './posts'
+import all from './all'
 
 export default express
     .Router()
@@ -20,3 +21,4 @@ export default express
     .use('/login', loginRouter)
     .use('/users', usersRouter)
     .use('/posts', postsRouter)
+    .use('*', all)

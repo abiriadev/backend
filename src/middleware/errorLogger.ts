@@ -8,9 +8,7 @@ export default async (
     next: NextFunction,
 ) => {
     if (err instanceof ResponseError) {
-        const format = `[${err.status}] (${err.errorName ?? 'Error'}) ${
-            err.action ?? 'no action'
-        } -> ${err.message}`
+        const format = `[${err.status}] (${err.errorName}) ${err.action} -> ${err.message}`
 
         console.error(format)
     }

@@ -8,12 +8,19 @@ interface ResponseErrorProperties {
 export default class extends Error implements ResponseErrorProperties {
     readonly status: number
     readonly message: string
-    readonly action?: string
-    readonly errorName?: string
+    readonly action: string
+    readonly errorName: string
 
     constructor(_: ResponseErrorProperties) {
         super()
 
-        Object.assign(this, _)
+        Object.assign(
+            this,
+            {
+                errorName: 'Error',
+                action: 'noAction',
+            },
+            _,
+        )
     }
 }

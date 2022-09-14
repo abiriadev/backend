@@ -13,9 +13,9 @@ export default async (
 
         const errJson = {
             status: err.status,
+            errorName: err.errorName,
+            action: err.action,
             message: err.message,
-            errorName: err.errorName ?? 'Error',
-            action: err.action ?? 'noAction',
         }
 
         res.json(errJson)

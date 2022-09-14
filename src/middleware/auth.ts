@@ -14,7 +14,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization']
     const token = authHeader?.split(' ')?.[1]
 
-    if (token == null) return res.sendStatus(401)
+    if (token == null)
+        return next(
+            new ResponseError({
+                status: 401,
+                errorName: 'TokenRequired',
+                message: 'API token must be required for this action',
+            }),
+        )
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string)

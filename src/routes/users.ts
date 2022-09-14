@@ -1,36 +1,21 @@
 import express from 'express'
 import prisma from '../prisma'
 import ResponseError from '../class/ResponseError'
+import {
+    excludePassword,
+    excludeContent,
+    basics,
+} from '../utils/excludePassword'
+import { dateMapper } from '../utils/mapRecurse'
 
 export default express
     .Router()
     .get('/', async (req, res) => {
         const users = await prisma.user.findMany({
-            select: {
-                id: true,
-                createdAt: true,
-                updatedAt: true,
-                name: true,
-            },
+            select: excludePassword,
         })
 
-        res.json(users)
-    })
-    .post('/', async (req, res) => {
-        const newUser = await prisma.user.create({
-            data: {
-                name: req.body.name,
-                password: req.body.password,
-            },
-            select: {
-                id: true,
-                createdAt: true,
-                updatedAt: true,
-                name: true,
-            },
-        })
-
-        res.json(newUser)
+        res.json(dateMapper(users))
     })
     .get('/:id', async (req, res, next) => {
         try {
@@ -39,11 +24,27 @@ export default express
                     id: req.params.id,
                 },
                 select: {
-                    id: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    name: true,
-                    recentPosts: true,
+                    ...excludePassword,
+                    recentPosts: {
+                        select: {
+                            ...excludeContent,
+                            author: {
+                                select: {
+                                    ...excludePassword,
+                                },
+                            },
+                        },
+                    },
+                    recentComment: {
+                        select: {
+                            ...basics,
+                            author: {
+                                select: {
+                                    ...excludePassword,
+                                },
+                            },
+                        },
+                    },
                 },
             })
 
@@ -57,7 +58,7 @@ export default express
                     }),
                 )
             } else {
-                res.json(user)
+                res.json(dateMapper(user))
             }
         } catch (err) {
             next(
