@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import ResponseError from '../class/ResponseError'
+import log from '../logger'
 
 export default async (
 	err: Error,
@@ -10,7 +11,7 @@ export default async (
 	if (err instanceof ResponseError) {
 		const format = `[${err.status}] (${err.errorName}) ${err.action} -> ${err.message}`
 
-		console.error(format)
+		log.error(format)
 	}
 
 	next(err)
