@@ -8,6 +8,33 @@
 
 `eco3s` 서비스에서 사용할, API명세와 백엔드 로직을 관리하는 레포지토리입니다.
 
+## Stack
+
+| Name         | Position            | Note                                                      | Link                                                                                                     |
+| ------------ | ------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Docker`     | container manager   | DB와 웹 서버 컨테이너 실행 및 관리                        | [`homepage`](https://docker.com/) [`github org`](https://github.com/docker)                              |
+| `ESbuild`    | bundler             | 배포시 코드 bundling, minifying, tree shacking (DCE)      | [`homepage`](https://esbuild.github.io/) [`github`](https://github.com/evanw/esbuild)                    |
+| `ESlint`     | lint                | 코드 품질 검사 및 강제화 도구                             | [`homepage`](https://eslint.org/) [`github`](https://github.com/eslint/eslint)                           |
+| `Express`    | backend framework   | API 구현 담당                                             | [`homepage`](https://expressjs.com/) [`github`](https://github.com/expressjs/express)                    |
+| `FNM`        | node manager        | 개발에 필요한 Node 환경을 파일을 통해 재현                | [`github`](https://github.com/Schniz/fnm)                                                                |
+| `Git`        | version manager     | `git flow`와 유사한 워크플로 적용                         | [`homepage`](https://git-scm.com/) [`repository`](https://git.kernel.org/pub/scm/git/git.git)            |
+| `Husky`      | git hook manager    | `pre-commit` 훅 관리                                      | [`homepage`](https://typicode.github.io/husky/) [`github`](https://github.com/typicode/husky)            |
+| `Jest`       | unit test runner    | 유닛 테스트 검증(assert) 및 실행(runner)                  | [`homepage`](https://jestjs.io/) [`github`](https://github.com/facebook/jest)                            |
+| `JWT`        | http authentication | Stateless 한 인증 시스템 구현                             | [`homepage`](https://jwt.io) [`github`](https://github.com/auth0/node-jsonwebtoken)                      |
+| `Make` (GNU) | build system        | 여러 빌드 명령어를 그룹화하고 종속성을 묘사하기 위해 사용 | [`homepage`](https://gnu.org/software/make/)                                                             |
+| `Mongodb`    | database            | 메인 데이터베이스                                         | [`homepage`](https://mongodb.com) [`github`](https://github.com/mongodb/mongo)                           |
+| `Nginx`      | web server / proxy  | API서버 프록시 및 프런트엔드 서빙                         | [`homepage`](https://nginx.com/) [`repository`](http://hg.nginx.org/nginx/)                              |
+| `Node`       | runtime             | 개발 / 배포시 코드 및 기타 툴 실행                        | [`homepage`](https://nodejs.org) [`github`](https://github.com/nodejs/node)                              |
+| `OpenAPI`    | API specification   | 획일화된 API문서화 담당. `yaml`파일로 문서 작성.          | [`homepage`](https://openapis.org/) [`github`](https://github.com/OAI/OpenAPI-Specification)             |
+| `Prettier`   | code formatter      | `git diff`관리를 위한 일관적인 코드 포맷터                | [`homepage`](https://prettier.io/) [`github`](https://github.com/prettier/prettier)                      |
+| `Prisma`     | ORM / ODM           | 스키마 정의 및 관리, `MongoDB`와의 통신에 사용            | [`homepage`](https://prisma.io/) [`github`](https://github.com/prisma/prisma)                            |
+| `Redocly`    | OAS doc bundler     | `yaml`로 된 `OpenAPI` 문서를 검증하고 단일 파일로 번들링  | [`homepage`](https://redocly.com/) [`github`](https://github.com/Redocly/redocly-cli)                    |
+| `Supertest`  | integrated test     | 제작된 API를 실제와 유사한 환경으로 통합 테스트           | [`homepage`](https://github.com/visionmedia/supertest)                                                   |
+| `Swagger UI` | API document UI     | 프런트엔드 개발자들을 위한 API 엔드포인트 시각화          | [`homepage`](https://swagger.io/tools/swagger-ui/) [`github`](https://github.com/swagger-api/swagger-ui) |
+| `SWC`        | compiler            | `Rust`로 작성된 빠르고 확장 가능한 컴파일러이자 번들러    | [`homepage`](https://swc.rs/) [`github`](https://github.com/swc-project/swc)                             |
+| `Typescript` | language            | 컴파일 타임에 스키마와 타입을 검증 가능한 상위 레이어     | [`homepage`](https://typescriptlang.org/) [`github`](https://github.com/microsoft/TypeScript/)           |
+| `Winston`    | logger              | 각종 예기치 못한 에러에 대응하기 위한 로거 프레임워크     | [`github`](https://github.com/winstonjs/winston)                                                         |
+
 ## 빌드 방법
 
 ### Linux & MacOS
