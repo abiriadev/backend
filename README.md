@@ -1,9 +1,5 @@
 # Eco3S Backend API & Spec
 
-> **Warning** \
-> 현재 이 저장소는 API 문서(`swagger-ui`)를 제공하지 않습니다. \
-> 당분간은 [미러 저장소](https://github.com/abiriadev)의 [깃헙 페이지](https://abiriadev.github.io/hackathon-backend)에서 실행 불가능한 문서를 확인하실 수 있습니다.
-
 ## 개요
 
 `eco3s` 서비스에서 사용할, API명세와 백엔드 로직을 관리하는 레포지토리입니다.
@@ -35,56 +31,20 @@
 | `Typescript` | language            | 컴파일 타임에 스키마와 타입을 검증 가능한 상위 레이어     | [`homepage`](https://typescriptlang.org/) [`github`](https://github.com/microsoft/TypeScript/)           |
 | `Winston`    | logger              | 각종 예기치 못한 에러에 대응하기 위한 로거 프레임워크     | [`github`](https://github.com/winstonjs/winston)                                                         |
 
-## 빌드 방법
-
-### Linux & MacOS
-
-1. 이 저장소를 로컬로 클론합니다.
-
-```sh
-$ git clone https://github.com/eco3s/backend
-```
-
-2. 필요한 패키지를 설치합니다.
-
-> **Note** \
-> `node`가 필요합니다
-
-```sh
-$ npm install
-```
-
-2. OAS 문서를 번들링합니다.
-
-> **Note** \
-> `make`가 필요합니다
-
-```sh
-$ make bundle
-```
-
-`dist/bundle.yaml` 에서 번들링된 OAS 문서를 찾을 수 있습니다.
-
-### Windows
-
-_(현재 미지원)_
-
-## 실행 방법
+## 빌드 & 실행
 
 > **Warning** \
 > 아래의 모든 방법은 `x86_64(amd64)`아키텍처의 `Arch Linux 5.19.4` 커널 위에서만 테스트되었습니다. \
 > 다른 환경을 사용할 경우 실행시 예기치 못한 결과가 발생할 수 있습니다. \
 > 만약 특정 환경에서만 발생하는 에러를 발견하셨다면, 언제든지 구체적인 에러 메시지와 함께 저를 호출해 주세요.
 
-### 도커 컴포즈 사용
-
-#### 도커 설치
+### 도커 설치
 
 컴포즈를 사용하기 위해서는 먼저 도커를 설치해야 합니다.
 
 만약 자신의 OS가 리눅스라면 `docker`를, 그렇지 않다면 [`docker desktop`](https://www.docker.com/products/docker-desktop/)을 설치하길 권장합니다.
 
-##### 설치 확인
+#### 설치 확인
 
 ```sh
 $ docker -v
@@ -96,14 +56,14 @@ $ docker -v
 Docker version 20.10.17, build 100c70180f
 ```
 
-#### 도커 컴포즈 설치
+### 도커 컴포즈 설치
 
 [Compose V2](https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command)를 사용합니다.
 
 > **Note** \
 > 도커 데스크톱을 설치하셨다면 이미 docker compose를 사용하실 수 있습니다.
 
-##### Arch Linux
+#### Arch Linux
 
 별다른 공식 지원이 없기에 [수동으로 compose 플러그인을 설치합니다.](https://docs.docker.com/compose/install/linux/#install-the-plugin-manually)
 
@@ -115,7 +75,7 @@ $ mkdir -p $DOCKER_CONFIG/cli-plugins
 $ curl -SL https://github.com/docker/compose/releases/download/v2.10.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
 ```
 
-##### 설치 확인
+#### 설치 확인
 
 도커 데스크톱을 설치하셨더라도 확인을 위해 해 주세요
 
@@ -132,7 +92,7 @@ Docker Compose version v2.10.2
 수동으로 설치한 경우, 입력한 플러그인 버전이 일치하는지 확인해 주세요. \
 (이 경우 `2.10.2`)
 
-#### 실행
+### 실행
 
 다음 명령으로 모든 컨테이너를 활성화시킬 수 있습니다.
 
@@ -140,25 +100,27 @@ Docker Compose version v2.10.2
 $ docker compose up -d
 ```
 
-> **Warning** \
-> 이 명령어는 `bind mount`를 사용합니다. \
-> 반드시 이 프로젝트의 루트에서 해당 명령어를 실행해 주세요.
+> **Note** \
+> 몇 분에서 최대 10분 정도까지 시간이 소요될 수 있습니다.
+> 한번 빌드 캐시가 만들어지고 로컬에 이미지가 저장되고 나면 앞으로 실행할 때는 빨리 실행되니 걱정하지 마세요.
 
-##### DB
+#### DB
 
 DB로는 `mongodb`를 사용합니다.
 
-###### 연결
+##### 연결
 
 기본적으로 27017포트를 사용합니다.
 
-데이터베이스명은 eco3s를 사용합니다.
+데이터베이스명은 `eco3s`를 사용합니다.
 
 ```sh
 mongosh 'mongodb://localhost:27017/eco3s'
 ```
 
-###### 데이터 관리
+일반적으로 DB에 직접 연결하실 필요는 없습니다.
+
+##### 데이터 관리
 
 한번 초기화된 이상, 모든 데이터는 `data` 볼륨에 영구히 저장됩니다.
 
@@ -177,17 +139,21 @@ $ docker compose down -v
 > 이 명령어는 현재까지 저장된 볼륨을 모두 삭제합니다. \
 > 중요한 데이터가 있다면 백업을 먼저 진행해 주세요.
 
-만약 해당 볼륨이 사용중이라 지울 수 없다는 오류가 자꾸 발생하면 최후의 수단으로 다음 명령어를 사용하실 수 있습니다.
+#### App
+
+백엔드 서버는 `8888` 포트에서 작동합니다.
 
 ```sh
-$docker container prune -f && docker volume prune -f
+curl localhost:8888/ # 안내 페이지
+
+curl localhost:8888/api/users # 모든 유저 목록을 가져오는 API 실행
 ```
 
-> **Warning** \
-> 이 명령어는 현재까지 저장된 모든 컨테이너와 볼륨을 삭제합니다. \
-> 완전한 초기화가 필요한 것이 아니라면 해당 명령어를 사용하지 마세요.
+`/`(루트 경로, 해당 경우 `localhost:8888/`)로 들어가면 임시 안내 페이지가 등장합니다.
 
-#### 종료
+안내 페이지의 설명을 따라 API문서 혹은 Prisma 문서를 사용하실 수 있습니다.
+
+### 종료
 
 해당 앱을 종료하고 싶으시다면 다음 명령어를 사용해 주세요.
 
@@ -201,13 +167,29 @@ $ docker compose stop
 $ docker compose down
 ```
 
+종료와 함께 모든 컨테이너와 모든 볼륨을 지우고 싶으시다면 다음 명령어를 사용해 주세요.
+
+```sh
+$ docker compose down -v
+```
+
+### 유닛 테스트
+
+다음 명령어로 유닛 테스트를 실행할 수 있습니다.
+
+```sh
+docker compose run --tty=false --interactive=false app npx jest --verbose --silent=false
+```
+
+만약 소스를 수정했다면, 커밋 전에 반드시 유닛 테스트를 돌려 주세요.
+
 ## 오류 해결
 
 만약 해당 저장소에서 오류를 발견했거나 위 코드를 실행하던 중 정상적인 빌드가 되지 않으면 언제든지 관련 에러 메시지와 함께 저를 호출해 주세요.
 
 ## 작성자
 
--   Abiria
+-   [Abiria](https://github.com/abiriadev)
 
 ## 라이선스
 
