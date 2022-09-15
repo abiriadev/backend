@@ -1,7 +1,7 @@
 operationId: deletePost
 summary: 자신이 쓴 글 지우기
 description: |
-  내부적으로 글 데이터를 완전히 삭제하지는 않습니다.
+  내부적으로 글 삭제 명령을 실행합니다.
 tags:
   - Post
 responses:

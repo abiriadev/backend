@@ -13,8 +13,6 @@ Category:
 # error
 Error:
   $ref: ./Error.yaml
-HttpError:
-  $ref: ./HttpError.yaml
 
 # schemas
 User:
@@ -29,13 +27,3 @@ PostPartial:
   $ref: ./PostPartial.yaml
 Comment:
   $ref: ./Comment.yaml
-Location:
-  $ref: ./Location.yaml
-LocationTuple:
-  $ref: ./LocationTuple.yaml
-Image:
-  $ref: ./Image.yaml
-SpeciesPreview:
-  $ref: ./SpeciesPreview.yaml
-Species:
-  $ref: ./Species.yaml

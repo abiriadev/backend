@@ -4,10 +4,16 @@ properties:
     oneOf:
       - $ref: ./Date.yaml
     readOnly: true
+    description: 해당 댓글이 등록된 시간을 의미합니다.
+  updatedAt:
+    oneOf:
+      - $ref: ./Date.yaml
+    readOnly: true
   author:
     oneOf:
       - $ref: ./User.yaml
     readOnly: true
+    description: 해당 댓글이 수정된 시간을 의미합니다.
   content:
     type: string
     example: (대충 교란종 관련된 댓글 1)

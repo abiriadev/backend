@@ -1,12 +1,9 @@
-import express from 'express'
-import loginRouter from './login'
+import express, { Router } from 'express'
 import path from 'path'
-import usersRouter from './users'
-import postsRouter from './posts'
 import all from './all'
+import api from './api'
 
-export default express
-	.Router()
+export default Router()
 	.get('/', (_req, res) => {
 		res.json({
 			message: 'hello',
@@ -21,7 +18,5 @@ export default express
 			),
 		),
 	)
-	.use('/login', loginRouter)
-	.use('/users', usersRouter)
-	.use('/posts', postsRouter)
+	.use('/api', api)
 	.use('*', all)

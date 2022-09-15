@@ -9,6 +9,12 @@ properties:
     type: string
     example: user123
   createdAt:
+    description: 유저 정보가 처음 저장된 날짜를 표현합니다.
+    oneOf:
+      - $ref: ./Date.yaml
+    readOnly: true
+  updatedAt:
+    description: 유저 정보가 수정된 날짜를 표현합니다.
     oneOf:
       - $ref: ./Date.yaml
     readOnly: true

@@ -21,6 +21,11 @@ COPY ./package-lock.json .
 # install dependencies
 RUN ["npm", "install"]
 
+# copy schema files
+COPY ./schemas ./schemas
+
+RUN ["npx", "@redocly/cli", "bundle", "./schemas/openapi.yaml", "--output", "./dist/bundle.yaml", "--ext", "yaml"]
+
 # COPY prisma schema directory
 COPY ./prisma ./prisma
 
@@ -90,6 +95,9 @@ COPY --from=bundle /usr/src/app/prisma ./
 
 # copy prisma runtime engine
 COPY --from=bundle /usr/src/app/node_modules/@prisma/engines/libquery_engine-linux-musl.so.node ./
+
+# copy bundled schema file
+COPY --from=bundle /usr/src/app/dist/bundle.yaml ./dist/bundle.yaml
 
 # copy bundled file
 COPY --from=bundle /usr/src/app/dist/bundle.js .

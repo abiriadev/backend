@@ -8,12 +8,9 @@ requestBody:
     모든 필드는 optional 입니다. \
     따라서 기존 객체에서 **수정할 부분만** 전달하시면 됩니다.
   content:
-    multipart/form-data:
+    application/json:
       schema:
         $ref: ../../../components/schemas/PostPartial.yaml
-      encoding:
-        imageFile:
-          contentType: image/*
 responses:
   200:
     description: |

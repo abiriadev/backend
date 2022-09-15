@@ -12,15 +12,10 @@ requestBody:
 
     `Post`의 자세한 구조와 어떤 필드가 어떤 역할인지 등에 대한 내용은
     `Post`의 스키마 문서를 참고하세요.
-
-    사진이 포함되어 있기 때문에 요청을 보낼 형식으로 `multipart/form-data`를 사용해야 합니다.
   content:
-    multipart/form-data:
+    application/json:
       schema:
         $ref: ../../components/schemas/Post.yaml
-      encoding:
-        imageFile:
-          contentType: Image/*
 responses:
   201:
     description: |

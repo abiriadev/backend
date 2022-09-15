@@ -6,16 +6,6 @@ import { ObjectId } from 'bson'
 
 const request = supertest(app)
 
-describe('basic router testing', () => {
-	it('must return hello message', async () => {
-		const res = await request.get('/')
-
-		expect(res.headers['content-type']).toMatch(/json/)
-		expect(res.status).toEqual(200)
-		expect(res.body.message).toEqual('hello')
-	})
-})
-
 describe('api test', () => {
 	beforeAll(async () => {
 		await prisma.$connect()
@@ -45,10 +35,12 @@ describe('api test', () => {
 		let token = null
 
 		it('creat user', async () => {
-			const res = await request.post('/login').send({
-				name: newUser.name,
-				password: newUser.password,
-			})
+			const res = await request
+				.post('/api/login')
+				.send({
+					name: newUser.name,
+					password: newUser.password,
+				})
 
 			expect(res.status).toEqual(200)
 			expect(res.body.user.name).toEqual(newUser.name)
@@ -63,7 +55,7 @@ describe('api test', () => {
 		it('get all users', async () => {
 			expect(userId).not.toBeNull()
 
-			const res = await request.get('/users')
+			const res = await request.get('/api/users')
 
 			expect(res.body).toHaveLength(1)
 			expect(res.body?.[0].name).toBe('Abiria')
@@ -79,7 +71,7 @@ describe('api test', () => {
 			expect(userId).not.toBeNull()
 
 			const res = await request.get(
-				`/users/${userId}`,
+				`/api/users/${userId}`,
 			)
 
 			expect(res.status).toBe(200)
@@ -98,7 +90,7 @@ describe('api test', () => {
 			expect(userId).not.toBeNull()
 
 			const res = await request
-				.post('/posts')
+				.post('/api/posts')
 				.set('Authorization', `Bearer ${token}`)
 				.send({
 					title: newPost.title,
@@ -123,7 +115,7 @@ describe('api test', () => {
 		})
 
 		it('get all posts', async () => {
-			const res = await request.get('/posts')
+			const res = await request.get('/api/posts')
 
 			expect(res.status).toBe(200)
 			expect(res.body).toHaveLength(1)
@@ -134,7 +126,7 @@ describe('api test', () => {
 			expect(postId).not.toBeNull()
 
 			const res = await request.get(
-				`/posts/${postId}`,
+				`/api/posts/${postId}`,
 			)
 
 			expect(res.status).toBe(200)
@@ -151,7 +143,7 @@ describe('api test', () => {
 			expect(userId).not.toBeNull()
 
 			const res = await request.get(
-				`/users/${userId}`,
+				`/api/users/${userId}`,
 			)
 
 			expect(res.status).toBe(200)
@@ -178,10 +170,12 @@ describe('api test', () => {
 		let userId: null | string = null
 
 		it('create new user', async () => {
-			const res = await request.post('/login').send({
-				name: newUser.name,
-				password: newUser.password,
-			})
+			const res = await request
+				.post('/api/login')
+				.send({
+					name: newUser.name,
+					password: newUser.password,
+				})
 
 			expect(res.status).toBe(200)
 			expect(res.body.user.name).toBe(newUser.name)
@@ -207,10 +201,12 @@ describe('api test', () => {
 		it('login with the user', async () => {
 			expect(userId).not.toBeNull()
 
-			const res = await request.post('/login').send({
-				name: newUser.name,
-				password: newUser.password,
-			})
+			const res = await request
+				.post('/api/login')
+				.send({
+					name: newUser.name,
+					password: newUser.password,
+				})
 
 			expect(res.status).toBe(200)
 			expect(res.body.user.name).toBe(newUser.name)
@@ -256,10 +252,12 @@ describe('api test', () => {
 		const fakeId: Id = '53209bb2bfe0ccea91ef5d11'
 
 		it('creat new user', async () => {
-			const res = await request.post('/login').send({
-				name: newUser.name,
-				password: newUser.password,
-			})
+			const res = await request
+				.post('/api/login')
+				.send({
+					name: newUser.name,
+					password: newUser.password,
+				})
 
 			expect(res.status).toBe(200)
 			expect(res.body).toHaveProperty('key')
@@ -270,10 +268,12 @@ describe('api test', () => {
 		})
 
 		it('must throw error when user try to create new account with same name', async () => {
-			const res = await request.post('/login').send({
-				name: newUser.name,
-				password: newUser.password + '%', // password may differ
-			})
+			const res = await request
+				.post('/api/login')
+				.send({
+					name: newUser.name,
+					password: newUser.password + '%', // password may differ
+				})
 
 			expect(res.status).toBe(401)
 			expect(res.body.errorName).toBe(
@@ -286,7 +286,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post('/posts')
+				.post('/api/posts')
 				.set('Authorization', `Bearer ${ctx.token}`)
 				.send(newPost)
 
@@ -301,7 +301,7 @@ describe('api test', () => {
 			expect(ctx.userId).not.toBeNull()
 
 			const res = await request
-				.post('/posts')
+				.post('/api/posts')
 				.set(
 					'Authorization',
 					`Bearer ${'mY cUsToM tOkEn348'}`,
@@ -317,7 +317,7 @@ describe('api test', () => {
 			expect(ctx.postId).not.toBeNull()
 
 			const res = await request.get(
-				`/users/${ctx.userId}`,
+				`/api/users/${ctx.userId}`,
 			)
 
 			expect(res.status).toBe(200)
@@ -329,7 +329,7 @@ describe('api test', () => {
 
 		it('must throw 400 error when request malformed', async () => {
 			const res = await request.get(
-				`/users/${'34378lol'}`,
+				`/api/users/${'34378lol'}`,
 			)
 
 			expect(res.status).toBe(400)
@@ -340,7 +340,7 @@ describe('api test', () => {
 
 		it('must throw 404 error when there is no such user with given id', async () => {
 			const res = await request.get(
-				`/users/${fakeId}`,
+				`/api/users/${fakeId}`,
 			)
 
 			expect(res.status).toBe(404)
@@ -352,7 +352,7 @@ describe('api test', () => {
 			expect(ctx.postId).not.toBeNull()
 
 			const res = await request.get(
-				`/posts/${ctx.postId}`,
+				`/api/posts/${ctx.postId}`,
 			)
 
 			expect(res.status).toBe(200)
@@ -362,7 +362,7 @@ describe('api test', () => {
 
 		it('must throw 404 error when there is no such post with given name', async () => {
 			const res = await request.get(
-				`/posts/${fakeId}`,
+				`/api/posts/${fakeId}`,
 			)
 
 			expect(res.status).toBe(404)
@@ -379,7 +379,9 @@ describe('api test', () => {
 				expect(ctx.token).not.toBeNull()
 
 				const res = await request
-					.post(`/posts/${ctx.postId}/comments`)
+					.post(
+						`/api/posts/${ctx.postId}/comments`,
+					)
 					.set(
 						'Authorization',
 						`Bearer ${ctx.token}`,
@@ -400,7 +402,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post(`/posts/${fakeId}/comments`)
+				.post(`/api/posts/${fakeId}/comments`)
 				.set('Authorization', `Bearer ${ctx.token}`)
 				.send({
 					content: '1234',
@@ -416,7 +418,7 @@ describe('api test', () => {
 			expect(ctx.postId).not.toBeNull()
 
 			const res = await request.get(
-				`/posts/${ctx.postId}`,
+				`/api/posts/${ctx.postId}`,
 			)
 
 			expect(res.status).toBe(200)
@@ -424,25 +426,29 @@ describe('api test', () => {
 		})
 
 		it('must throw error when access to unavailable endpoint', async () => {
-			const res = await request.get('/login')
+			const res = await request.get('/api/login')
 
 			expect(res.status).toBe(400)
 			expect(res.body.errorName).toBe('WrongEndpoint')
 		})
 
 		it('must throw error when required parameters are missing', async () => {
-			const res = await request.post('/login').send({
-				password: newUser.password,
-			})
+			const res = await request
+				.post('/api/login')
+				.send({
+					password: newUser.password,
+				})
 
 			expect(res.status).toBe(400)
 			expect(res.body.errorName).toBe('FieldRequired')
 		})
 
 		it('must throw error when required parameters are missing', async () => {
-			const res = await request.post('/login').send({
-				name: newUser.name,
-			})
+			const res = await request
+				.post('/api/login')
+				.send({
+					name: newUser.name,
+				})
 
 			expect(res.status).toBe(400)
 			expect(res.body.errorName).toBe('FieldRequired')
@@ -452,7 +458,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post('/posts')
+				.post('/api/posts')
 				.set('Authorization', `Bearer ${ctx.token}`)
 				.send({
 					content: newPost.content,
@@ -467,7 +473,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post('/posts')
+				.post('/api/posts')
 				.set('Authorization', `Bearer ${ctx.token}`)
 				.send({
 					title: newPost.title,
@@ -482,7 +488,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post('/posts')
+				.post('/api/posts')
 				.set('Authorization', `Bearer ${ctx.token}`)
 				.send({
 					title: newPost.title,
@@ -498,7 +504,7 @@ describe('api test', () => {
 			expect(ctx.postId).not.toBeNull()
 
 			const res = await request
-				.post(`/posts/${ctx.postId}/comments`)
+				.post(`/api/posts/${ctx.postId}/comments`)
 				.set('Authorization', `Bearer ${ctx.token}`)
 				.send({
 					// content: 'new comment'
@@ -512,7 +518,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post('/users/me')
+				.post('/api/users/me')
 				.set('Authorization', `Bearer ${ctx.token}`)
 
 			expect(res.status).toBe(200)
@@ -521,7 +527,7 @@ describe('api test', () => {
 
 		it('must throw error when invalid token has been given', async () => {
 			const res = await request
-				.post('/users/me')
+				.post('/api/users/me')
 				.set(
 					'Authorization',
 					`Bearer ${'eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY2MzIwNTY4OSwiaWF0IjoxNjYzMjA1Njg5fQ.5ZmSpFHyVooOBV8ur_l1Qc-hRtAkpi8YCIT_KFqKQSU'}`,
@@ -532,7 +538,7 @@ describe('api test', () => {
 		})
 
 		it('must throw error when token does not provided', async () => {
-			const res = await request.post('/users/me')
+			const res = await request.post('/api/users/me')
 
 			expect(res.status).toBe(401)
 			expect(res.body.errorName).toBe('TokenRequired')
@@ -545,7 +551,7 @@ describe('api test', () => {
 			)
 
 			const res = await request
-				.post('/users/me')
+				.post('/api/users/me')
 				.set('Authorization', `Bearer ${fakeToken}`)
 
 			expect(res.status).toBe(401)
@@ -563,7 +569,7 @@ describe('api test', () => {
 			)
 
 			const res = await request
-				.post('/users/me')
+				.post('/api/users/me')
 				.set('Authorization', `Bearer ${fakeToken}`)
 
 			expect(res.status).toBe(404)
@@ -579,7 +585,7 @@ describe('api test', () => {
 			)
 
 			const res = await request
-				.post('/users/me')
+				.post('/api/users/me')
 				.set('Authorization', `Bearer ${fakeToken}`)
 
 			expect(res.status).toBe(401)
@@ -595,7 +601,7 @@ describe('api test', () => {
 			expect(ctx.userId).not.toBeNull()
 
 			const res = await request
-				.put('/users/me')
+				.put('/api/users/me')
 				.send({
 					name: newName,
 				})
@@ -610,7 +616,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post('/users/me')
+				.post('/api/users/me')
 				.set('Authorization', `Bearer ${ctx.token}`)
 
 			expect(res.status).toBe(200)
@@ -624,7 +630,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.put('/users/me')
+				.put('/api/users/me')
 				.send({})
 				.set('Authorization', `Bearer ${ctx.token}`)
 
@@ -644,7 +650,7 @@ describe('api test', () => {
 
 			it('must delete user', async () => {
 				const res = await request
-					.post('/login')
+					.post('/api/login')
 					.send(testUser)
 
 				expect(res.status).toBe(200)
@@ -673,7 +679,7 @@ describe('api test', () => {
 
 			it('must get data of user with given id', async () => {
 				const res = await request.get(
-					`/users/${testUserId}`,
+					`/api/users/${testUserId}`,
 				)
 
 				expect(res.status).toBe(200)
@@ -682,7 +688,7 @@ describe('api test', () => {
 
 			it('must delete user', async () => {
 				const res = await request
-					.delete('/users/me')
+					.delete('/api/users/me')
 					.set(
 						'Authorization',
 						`Bearer ${testToken}`,
@@ -694,7 +700,7 @@ describe('api test', () => {
 
 			it('must delete user permanently', async () => {
 				const res = await request.get(
-					`/users/${testUserId}`,
+					`/api/users/${testUserId}`,
 				)
 
 				expect(res.status).toBe(404)
@@ -716,7 +722,7 @@ describe('api test', () => {
 
 			it('must create new user', async () => {
 				const res = await request
-					.post('/login')
+					.post('/api/login')
 					.send(testUser)
 
 				expect(res.status).toBe(200)
@@ -733,7 +739,7 @@ describe('api test', () => {
 
 			it('must allow user to login with same password', async () => {
 				const res = await request
-					.post('/login')
+					.post('/api/login')
 					.send(testUser)
 
 				expect(res.status).toBe(200)
@@ -748,7 +754,7 @@ describe('api test', () => {
 				const newPassword = 'new! new! new!'
 
 				const res = await request
-					.post('/users/me/password')
+					.post('/api/users/me/password')
 					.set(
 						'Authorization',
 						`Bearer ${testToken}`,
@@ -770,7 +776,7 @@ describe('api test', () => {
 				const newPassword = 'new! new! new!'
 
 				const res = await request
-					.post('/users/me/password')
+					.post('/api/users/me/password')
 					.set(
 						'Authorization',
 						`Bearer ${testToken}`,
@@ -790,7 +796,7 @@ describe('api test', () => {
 
 			it('must throw an error if old field is omitted', async () => {
 				const res = await request
-					.post('/users/me/password')
+					.post('/api/users/me/password')
 					.set(
 						'Authorization',
 						`Bearer ${testToken}`,
@@ -811,7 +817,7 @@ describe('api test', () => {
 				const newPassword = 'new! new! new! new!!'
 
 				const res = await request
-					.post('/users/me/password')
+					.post('/api/users/me/password')
 					.set(
 						'Authorization',
 						`Bearer ${testToken}`,
@@ -830,7 +836,7 @@ describe('api test', () => {
 
 			it('must not allow user to login with old password', async () => {
 				const res = await request
-					.post('/login')
+					.post('/api/login')
 					.send({
 						name: testUser.name,
 						password: oldPassword,
@@ -844,7 +850,7 @@ describe('api test', () => {
 
 			it('must allow user to login with changed password', async () => {
 				const res = await request
-					.post('/login')
+					.post('/api/login')
 					.send(testUser)
 
 				expect(res.status).toBe(200)
@@ -879,7 +885,7 @@ describe('api test', () => {
 
 			it('must create user', async () => {
 				const res = await request
-					.post(`/login`)
+					.post(`/api/login`)
 					.send(ctx.user)
 
 				expect(res.status).toBe(200)
@@ -895,7 +901,7 @@ describe('api test', () => {
 				expect(ctx.userData.token).not.toBeNull()
 
 				const res = await request
-					.post(`/posts`)
+					.post(`/api/posts`)
 					.set(
 						'Authorization',
 						`Bearer ${ctx.userData.token}`,
@@ -914,7 +920,7 @@ describe('api test', () => {
 				expect(ctx.postData.id).not.toBeNull()
 
 				const res = await request.get(
-					`/posts/${ctx.postData.id}`,
+					`/api/posts/${ctx.postData.id}`,
 				)
 
 				expect(res.status).toBe(200)
@@ -929,7 +935,7 @@ describe('api test', () => {
 				const newTitle = 'new title!'
 
 				const res = await request
-					.put(`/posts/${ctx.postData.id}`)
+					.put(`/api/posts/${ctx.postData.id}`)
 					.set(
 						'Authorization',
 						`Bearer ${ctx.userData.token}`,
@@ -952,7 +958,7 @@ describe('api test', () => {
 				const newCategory = 'report'
 
 				const res = await request
-					.put(`/posts/${ctx.postData.id}`)
+					.put(`/api/posts/${ctx.postData.id}`)
 					.set(
 						'Authorization',
 						`Bearer ${ctx.userData.token}`,
@@ -976,7 +982,7 @@ describe('api test', () => {
 					'lorem... meh just new content'
 
 				const res = await request
-					.put(`/posts/${ctx.postData.id}`)
+					.put(`/api/posts/${ctx.postData.id}`)
 					.set(
 						'Authorization',
 						`Bearer ${ctx.userData.token}`,
@@ -995,7 +1001,9 @@ describe('api test', () => {
 			describe('error test', () => {
 				it('must throw error if type does not match', async () => {
 					const res = await request
-						.put(`/posts/${ctx.postData.id}`)
+						.put(
+							`/api/posts/${ctx.postData.id}`,
+						)
 						.set(
 							'Authorization',
 							`Bearer ${ctx.userData.token}`,
@@ -1012,7 +1020,7 @@ describe('api test', () => {
 
 				it('must throw error if there is no posts with given id', async () => {
 					const res = await request
-						.put(`/posts/${fakeId}`)
+						.put(`/api/posts/${fakeId}`)
 						.set(
 							'Authorization',
 							`Bearer ${ctx.userData.token}`,
@@ -1031,7 +1039,9 @@ describe('api test', () => {
 			describe('delete post story', () => {
 				it('must delete post', async () => {
 					const res = await request
-						.delete(`/posts/${ctx.postData.id}`)
+						.delete(
+							`/api/posts/${ctx.postData.id}`,
+						)
 						.set(
 							'Authorization',
 							`Bearer ${ctx.userData.token}`,
@@ -1045,7 +1055,7 @@ describe('api test', () => {
 
 				it('must delete post permanently', async () => {
 					const res = await request.get(
-						`/posts/${ctx.postData.id}`,
+						`/api/posts/${ctx.postData.id}`,
 					)
 
 					expect(res.status).toBe(404)

@@ -5,4 +5,4 @@ description: |
 content:
   application/json:
     schema:
-      $ref: ../schemas/HttpError.yaml
+      $ref: ../schemas/Error.yaml

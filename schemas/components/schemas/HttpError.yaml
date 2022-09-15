@@ -23,8 +23,3 @@ allOf:
           Couldn't verify the incoming request.
           maybe you didn't send the proper token or sended an expired one.
           please try again with a valid JWT token
-      additionalData:
-        type: 'null'
-        example: ~
-        description: |
-          `HttpError`의 경우 항상 `null`입니다.

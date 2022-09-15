@@ -114,7 +114,9 @@ test: \
 	docker compose -p ${PROJECT_NAME} run \
 		--tty=false \
 		--interactive=false \
-		app npx ${TEST_RUNNER}
+		app npx ${TEST_RUNNER} \
+			--verbose \
+			--silent=false
 
 bundle: \
 	${MODULE_PATH}/${BUNDLER}

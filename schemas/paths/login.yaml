@@ -96,7 +96,8 @@ post:
               id: 6308a2c3d95ee0cf64b2e992
               name: alice
               createdAt: 1661493944000
+              updatedAt: 1661493944000
     400:
       $ref: ../components/responses/BadRequest.yaml
     401:
-      $ref: ../components/responses/BadRequest.yaml
+      $ref: ../components/responses/Unauthorized.yaml
