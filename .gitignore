@@ -4,3 +4,4 @@ bundle.yaml
 /package-lock.json
 .env
 /public/prisma
+*.log

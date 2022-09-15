@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import ResponseError from '../class/ResponseError'
+import { ObjectId } from 'bson'
 
 declare global {
 	namespace Express {
@@ -12,7 +13,7 @@ declare global {
 
 export default async (
 	req: Request,
-	res: Response,
+	_res: Response,
 	next: NextFunction,
 ) => {
 	const authHeader = req.headers['authorization']
@@ -31,8 +32,32 @@ export default async (
 	try {
 		const decoded = jwt.verify(
 			token,
-			process.env.JWT_SECRET as string,
+			process.env.JWT_SECRET,
 		)
+
+		if (decoded?.['_id'] === undefined) {
+			return next(
+				new ResponseError({
+					status: 401,
+					message:
+						'your token must have _id payload',
+					errorName:
+						'TokenDoesNotHaveRequiredPayload',
+				}),
+			)
+		}
+
+		if (!ObjectId.isValid(decoded?.['_id'])) {
+			return next(
+				new ResponseError({
+					status: 401,
+					message:
+						'your token contains invalid ObjectId',
+					errorName: 'TokenHasInvalidObjectId',
+				}),
+			)
+		}
+
 		req.user = decoded
 
 		next()

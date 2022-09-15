@@ -7,16 +7,18 @@ import {
 	basics,
 } from '../utils/excludePassword'
 import { dateMapper } from '../utils/mapRecurse'
+import me from './me'
 
 export default express
 	.Router()
-	.get('/', async (req, res) => {
+	.get('/', async (_req, res) => {
 		const users = await prisma.user.findMany({
 			select: excludePassword,
 		})
 
 		res.json(dateMapper(users))
 	})
+	.use('/me', me)
 	.get('/:id', async (req, res, next) => {
 		try {
 			const user = await prisma.user.findUnique({

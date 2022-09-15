@@ -1,6 +1,8 @@
 import supertest from 'supertest'
 import app from '../app'
 import prisma from '../prisma'
+import jwt from 'jsonwebtoken'
+import { ObjectId } from 'bson'
 
 const request = supertest(app)
 
@@ -112,7 +114,6 @@ describe('api test', () => {
 			;['id', 'createdAt', 'updatedAt'].map(p =>
 				expect(res.body).toHaveProperty(p),
 			)
-			console.log(res.body)
 			expect(res.body.author.name).toBe(newUser.name)
 			expect(res.body.author).not.toHaveProperty(
 				'password',
@@ -252,7 +253,7 @@ describe('api test', () => {
 			comments: [],
 		}
 
-		const FakeId: Id = '53209bb2bfe0ccea91ef5d11'
+		const fakeId: Id = '53209bb2bfe0ccea91ef5d11'
 
 		it('creat new user', async () => {
 			const res = await request.post('/login').send({
@@ -339,7 +340,7 @@ describe('api test', () => {
 
 		it('must throw 404 error when there is no such user with given id', async () => {
 			const res = await request.get(
-				`/users/${FakeId}`,
+				`/users/${fakeId}`,
 			)
 
 			expect(res.status).toBe(404)
@@ -361,7 +362,7 @@ describe('api test', () => {
 
 		it('must throw 404 error when there is no such post with given name', async () => {
 			const res = await request.get(
-				`/posts/${FakeId}`,
+				`/posts/${fakeId}`,
 			)
 
 			expect(res.status).toBe(404)
@@ -399,7 +400,7 @@ describe('api test', () => {
 			expect(ctx.token).not.toBeNull()
 
 			const res = await request
-				.post(`/posts/${FakeId}/comments`)
+				.post(`/posts/${fakeId}/comments`)
 				.set('Authorization', `Bearer ${ctx.token}`)
 				.send({
 					content: '1234',
@@ -504,8 +505,355 @@ describe('api test', () => {
 				})
 
 			expect(res.status).toBe(400)
-			console.log(res.body)
 			expect(res.body.errorName).toBe('FieldRequired')
+		})
+
+		it('must get information about currently logined user', async () => {
+			expect(ctx.token).not.toBeNull()
+
+			const res = await request
+				.post('/users/me')
+				.set('Authorization', `Bearer ${ctx.token}`)
+
+			expect(res.status).toBe(200)
+			expect(res.body.id).toBe(ctx.userId)
+		})
+
+		it('must throw error when invalid token has been given', async () => {
+			const res = await request
+				.post('/users/me')
+				.set(
+					'Authorization',
+					`Bearer ${'eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY2MzIwNTY4OSwiaWF0IjoxNjYzMjA1Njg5fQ.5ZmSpFHyVooOBV8ur_l1Qc-hRtAkpi8YCIT_KFqKQSU'}`,
+				)
+
+			expect(res.status).toBe(401)
+			expect(res.body.errorName).toBe('TokenInvalid')
+		})
+
+		it('must throw error when token does not provided', async () => {
+			const res = await request.post('/users/me')
+
+			expect(res.status).toBe(401)
+			expect(res.body.errorName).toBe('TokenRequired')
+		})
+
+		it('must throw error when token does have required payload', async () => {
+			const fakeToken = jwt.sign(
+				{},
+				process.env.JWT_SECRET,
+			)
+
+			const res = await request
+				.post('/users/me')
+				.set('Authorization', `Bearer ${fakeToken}`)
+
+			expect(res.status).toBe(401)
+			expect(res.body.errorName).toBe(
+				'TokenDoesNotHaveRequiredPayload',
+			)
+		})
+
+		it("must throw error when couldn't find user with given id in token", async () => {
+			const fakeToken = jwt.sign(
+				{
+					_id: fakeId,
+				},
+				process.env.JWT_SECRET,
+			)
+
+			const res = await request
+				.post('/users/me')
+				.set('Authorization', `Bearer ${fakeToken}`)
+
+			expect(res.status).toBe(404)
+			expect(res.body.errorName).toBe('MeNotFound')
+		})
+
+		it('must throw error when id in token is invalid', async () => {
+			const fakeToken = jwt.sign(
+				{
+					_id: ':) tHIs iS 398734124 MALFORMED iD!#%#@',
+				},
+				process.env.JWT_SECRET,
+			)
+
+			const res = await request
+				.post('/users/me')
+				.set('Authorization', `Bearer ${fakeToken}`)
+
+			expect(res.status).toBe(401)
+			expect(res.body.errorName).toBe(
+				'TokenHasInvalidObjectId',
+			)
+		})
+
+		const newName = 'new name :)'
+
+		it('must change user data', async () => {
+			expect(ctx.token).not.toBeNull()
+			expect(ctx.userId).not.toBeNull()
+
+			const res = await request
+				.put('/users/me')
+				.send({
+					name: newName,
+				})
+				.set('Authorization', `Bearer ${ctx.token}`)
+
+			expect(res.status).toBe(200)
+			expect(res.body.id).toBe(ctx.userId)
+			expect(res.body.name).toBe(newName)
+		})
+
+		it('must change user data permenantly', async () => {
+			expect(ctx.token).not.toBeNull()
+
+			const res = await request
+				.post('/users/me')
+				.set('Authorization', `Bearer ${ctx.token}`)
+
+			expect(res.status).toBe(200)
+			expect(res.body.id).toBe(ctx.userId)
+			expect(res.body.name).toBe(newName)
+
+			newUser.name = newName
+		})
+
+		it('must not throw any error if empty json was sent', async () => {
+			expect(ctx.token).not.toBeNull()
+
+			const res = await request
+				.put('/users/me')
+				.send({})
+				.set('Authorization', `Bearer ${ctx.token}`)
+
+			expect(res.status).toBe(200)
+			expect(res.body.id).toBe(ctx.userId)
+			expect(res.body.name).toBe(newUser.name)
+		})
+
+		describe('user delete story', () => {
+			const testUser = {
+				name: 'test',
+				password: 'test1234',
+			}
+
+			let testToken = null
+			let testUserId = null
+
+			it('must delete user', async () => {
+				const res = await request
+					.post('/login')
+					.send(testUser)
+
+				expect(res.status).toBe(200)
+				expect(res.body?.user?.name).toBe(
+					testUser.name,
+				)
+				expect(
+					ObjectId.isValid(res.body?.user?.id),
+				).toBe(true)
+
+				testToken = res.body.key
+				testUserId = res.body.user.id
+			})
+
+			it('must be valid token', () => {
+				const decodedToken = jwt.verify(
+					testToken,
+					process.env.JWT_SECRET,
+				)
+
+				expect(decodedToken).toHaveProperty(
+					'_id',
+					testUserId,
+				)
+			})
+
+			it('must get data of user with given id', async () => {
+				const res = await request.get(
+					`/users/${testUserId}`,
+				)
+
+				expect(res.status).toBe(200)
+				expect(res.body.id).toBe(testUserId)
+			})
+
+			it('must delete user', async () => {
+				const res = await request
+					.delete('/users/me')
+					.set(
+						'Authorization',
+						`Bearer ${testToken}`,
+					)
+
+				expect(res.status).toBe(200)
+				expect(res.body.id).toBe(testUserId)
+			})
+
+			it('must delete user permanently', async () => {
+				const res = await request.get(
+					`/users/${testUserId}`,
+				)
+
+				expect(res.status).toBe(404)
+				expect(res.body.errorName).toBe(
+					'UserNotFound',
+				)
+			})
+		})
+
+		describe('changing password story', () => {
+			const testUser = {
+				name: 'pwtest',
+				password: 'test1234',
+			}
+
+			const oldPassword = testUser.password
+			let testToken = null
+			let testUserId = null
+
+			it('must create new user', async () => {
+				const res = await request
+					.post('/login')
+					.send(testUser)
+
+				expect(res.status).toBe(200)
+				expect(res.body?.user?.name).toBe(
+					testUser.name,
+				)
+				expect(
+					ObjectId.isValid(res.body?.user?.id),
+				).toBe(true)
+
+				testToken = res.body.key
+				testUserId = res.body.user.id
+			})
+
+			it('must allow user to login with same password', async () => {
+				const res = await request
+					.post('/login')
+					.send(testUser)
+
+				expect(res.status).toBe(200)
+				expect(res.body?.user?.name).toBe(
+					testUser.name,
+				)
+				expect(res.body?.user?.id).toBe(testUserId)
+				// expect(res.body.key).toBe(testToken)
+			})
+
+			it('must change password', async () => {
+				const newPassword = 'new! new! new!'
+
+				const res = await request
+					.post('/users/me/password')
+					.set(
+						'Authorization',
+						`Bearer ${testToken}`,
+					)
+					.send({
+						old: testUser.password,
+						new: newPassword,
+					})
+
+				expect(res.status).toBe(200)
+
+				// body must not have any data
+				expect(res.body).toEqual({})
+
+				testUser.password = newPassword
+			})
+
+			it('must have changed password permanently', async () => {
+				const newPassword = 'new! new! new!'
+
+				const res = await request
+					.post('/users/me/password')
+					.set(
+						'Authorization',
+						`Bearer ${testToken}`,
+					)
+					.send({
+						old: oldPassword,
+						new: newPassword,
+					})
+
+				expect(res.status).toBe(403)
+
+				// body must not have any data
+				expect(res.body.errorName).toBe(
+					'PasswordDoesNotMatch',
+				)
+			})
+
+			it('must throw an error if old field is omitted', async () => {
+				const res = await request
+					.post('/users/me/password')
+					.set(
+						'Authorization',
+						`Bearer ${testToken}`,
+					)
+					.send({
+						old: testUser.password,
+					})
+
+				expect(res.status).toBe(400)
+
+				// body must not have any data
+				expect(res.body.errorName).toBe(
+					'FieldRequired',
+				)
+			})
+
+			it('must throw an error if old field is omitted', async () => {
+				const newPassword = 'new! new! new! new!!'
+
+				const res = await request
+					.post('/users/me/password')
+					.set(
+						'Authorization',
+						`Bearer ${testToken}`,
+					)
+					.send({
+						new: newPassword,
+					})
+
+				expect(res.status).toBe(400)
+
+				// body must not have any data
+				expect(res.body.errorName).toBe(
+					'FieldRequired',
+				)
+			})
+
+			it('must not allow user to login with old password', async () => {
+				const res = await request
+					.post('/login')
+					.send({
+						name: testUser.name,
+						password: oldPassword,
+					})
+
+				expect(res.status).toBe(401)
+				expect(res.body.errorName).toBe(
+					'PasswordIncorrectOrUserAlreadyExist',
+				)
+			})
+
+			it('must allow user to login with changed password', async () => {
+				const res = await request
+					.post('/login')
+					.send(testUser)
+
+				expect(res.status).toBe(200)
+				expect(res.body?.user?.name).toBe(
+					testUser.name,
+				)
+				expect(res.body?.user?.id).toBe(testUserId)
+				// expect(res.body.key).toBe(testToken)
+			})
 		})
 	})
 })
