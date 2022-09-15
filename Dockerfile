@@ -26,6 +26,9 @@ COPY ./schemas ./schemas
 
 RUN ["npx", "@redocly/cli", "bundle", "./schemas/openapi.yaml", "--output", "./dist/bundle.yaml", "--ext", "yaml"]
 
+# copy public contents
+COPY ./public ./public
+
 # COPY prisma schema directory
 COPY ./prisma ./prisma
 
