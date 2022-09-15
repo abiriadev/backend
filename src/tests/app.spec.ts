@@ -855,5 +855,205 @@ describe('api test', () => {
 				// expect(res.body.key).toBe(testToken)
 			})
 		})
+
+		describe('changing post story', () => {
+			const ctx = {
+				user: {
+					name: 'hello user',
+					password: 'password1234',
+				},
+				post: {
+					title: 'title!',
+					content:
+						'lorem ipsum dolor sit amet, consectetur adip',
+					category: 'qa',
+				},
+				userData: {
+					token: null,
+					id: null,
+				},
+				postData: {
+					id: null,
+				},
+			}
+
+			it('must create user', async () => {
+				const res = await request
+					.post(`/login`)
+					.send(ctx.user)
+
+				expect(res.status).toBe(200)
+				expect(res.body.user.name).toBe(
+					ctx.user.name,
+				)
+
+				ctx.userData.id = res.body.user.id
+				ctx.userData.token = res.body.key
+			})
+
+			it('must create post', async () => {
+				expect(ctx.userData.token).not.toBeNull()
+
+				const res = await request
+					.post(`/posts`)
+					.set(
+						'Authorization',
+						`Bearer ${ctx.userData.token}`,
+					)
+					.send(ctx.post)
+
+				expect(res.status).toBe(200)
+				expect(res.body.author.id).toBe(
+					ctx.userData.id,
+				)
+
+				ctx.postData.id = res.body.id
+			})
+
+			it('must get post data of given id', async () => {
+				expect(ctx.postData.id).not.toBeNull()
+
+				const res = await request.get(
+					`/posts/${ctx.postData.id}`,
+				)
+
+				expect(res.status).toBe(200)
+				expect(res.body.title).toBe(ctx.post.title)
+				expect(res.body.id).toBe(ctx.postData.id)
+			})
+
+			it('must change post title', async () => {
+				expect(ctx.userData.token).not.toBeNull()
+				expect(ctx.postData.id).not.toBeNull()
+
+				const newTitle = 'new title!'
+
+				const res = await request
+					.put(`/posts/${ctx.postData.id}`)
+					.set(
+						'Authorization',
+						`Bearer ${ctx.userData.token}`,
+					)
+					.send({
+						title: newTitle,
+					})
+
+				expect(res.status).toBe(200)
+				expect(res.body.title).toBe(newTitle)
+				expect(res.body.id).toBe(ctx.postData.id)
+
+				ctx.post.title = newTitle
+			})
+
+			it('must change post category', async () => {
+				expect(ctx.userData.token).not.toBeNull()
+				expect(ctx.postData.id).not.toBeNull()
+
+				const newCategory = 'report'
+
+				const res = await request
+					.put(`/posts/${ctx.postData.id}`)
+					.set(
+						'Authorization',
+						`Bearer ${ctx.userData.token}`,
+					)
+					.send({
+						category: newCategory,
+					})
+
+				expect(res.status).toBe(200)
+				expect(res.body.category).toBe(newCategory)
+				expect(res.body.id).toBe(ctx.postData.id)
+
+				ctx.post.category = newCategory
+			})
+
+			it('must change post content', async () => {
+				expect(ctx.userData.token).not.toBeNull()
+				expect(ctx.postData.id).not.toBeNull()
+
+				const newContent =
+					'lorem... meh just new content'
+
+				const res = await request
+					.put(`/posts/${ctx.postData.id}`)
+					.set(
+						'Authorization',
+						`Bearer ${ctx.userData.token}`,
+					)
+					.send({
+						content: newContent,
+					})
+
+				expect(res.status).toBe(200)
+				expect(res.body.content).toBe(newContent)
+				expect(res.body.id).toBe(ctx.postData.id)
+
+				ctx.post.content = newContent
+			})
+
+			describe('error test', () => {
+				it('must throw error if type does not match', async () => {
+					const res = await request
+						.put(`/posts/${ctx.postData.id}`)
+						.set(
+							'Authorization',
+							`Bearer ${ctx.userData.token}`,
+						)
+						.send({
+							category: 'unknown category',
+						})
+
+					expect(res.status).toBe(400)
+					expect(res.body.errorName).toBe(
+						'FieldInvalid',
+					)
+				})
+
+				it('must throw error if there is no posts with given id', async () => {
+					const res = await request
+						.put(`/posts/${fakeId}`)
+						.set(
+							'Authorization',
+							`Bearer ${ctx.userData.token}`,
+						)
+						.send({
+							title: 'new tttt',
+						})
+
+					expect(res.status).toBe(404)
+					expect(res.body.errorName).toBe(
+						'PostDoesNotExist',
+					)
+				})
+			})
+
+			describe('delete post story', () => {
+				it('must delete post', async () => {
+					const res = await request
+						.delete(`/posts/${ctx.postData.id}`)
+						.set(
+							'Authorization',
+							`Bearer ${ctx.userData.token}`,
+						)
+
+					expect(res.status).toBe(200)
+					expect(res.body.id).toBe(
+						ctx.postData.id,
+					)
+				})
+
+				it('must delete post permanently', async () => {
+					const res = await request.get(
+						`/posts/${ctx.postData.id}`,
+					)
+
+					expect(res.status).toBe(404)
+					expect(res.body.errorName).toBe(
+						'PostNotFound',
+					)
+				})
+			})
+		})
 	})
 })

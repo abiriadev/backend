@@ -56,6 +56,22 @@ export default Router()
 			)
 		}
 
+		if (
+			!['report', 'qa', 'info'].includes(
+				req.body.category,
+			)
+		) {
+			return next(
+				new ResponseError({
+					errorName: 'FieldInvalid',
+					status: 400,
+					message:
+						'`category` must be one of "report", "qa", "info"',
+					action: 'createPost',
+				}),
+			)
+		}
+
 		const post = await prisma.post.create({
 			data: {
 				title: req.body.title,
@@ -113,9 +129,9 @@ export default Router()
 						action: 'getPost',
 					}),
 				)
-			} else {
-				res.json(dateMapper(post))
 			}
+
+			res.json(dateMapper(post))
 		} catch (err) {
 			next(
 				new ResponseError({
@@ -123,6 +139,145 @@ export default Router()
 					message: err.message,
 					action: 'getPost',
 					errorName: 'RequestInvalid',
+				}),
+			)
+		}
+	})
+	.put('/:id', auth, async (req, res, next) => {
+		try {
+			const updateData: {
+				title?: string
+				content?: string
+				category?: 'report' | 'qa' | 'info'
+			} = {}
+
+			if (req.body.title !== undefined) {
+				updateData.title = req.body.title
+			}
+
+			if (req.body.content !== undefined) {
+				updateData.content = req.body.content
+			}
+
+			if (req.body.category !== undefined) {
+				if (
+					!['report', 'qa', 'info'].includes(
+						req.body.category,
+					)
+				) {
+					return next(
+						new ResponseError({
+							errorName: 'FieldInvalid',
+							status: 400,
+							message:
+								'`category` must be one of "report", "qa", "info"',
+							action: 'editPost',
+						}),
+					)
+				}
+
+				updateData.category = req.body.category
+			}
+
+			const post = await prisma.post.findUnique({
+				where: {
+					id: req.params.id,
+				},
+			})
+
+			if (post === null) {
+				return next(
+					new ResponseError({
+						status: 404,
+						errorName: 'PostDoesNotExist',
+						message:
+							'the post you are trying to edit does not exist',
+						action: 'editPost',
+					}),
+				)
+			}
+
+			const updatedPost = await prisma.post.update({
+				select: {
+					...excludeContent,
+					content: true,
+				},
+				where: {
+					id: req.params.id,
+				},
+				data: updateData,
+			})
+
+			if (updatedPost === null) {
+				return next(
+					new ResponseError({
+						status: 404,
+						message: `could not find post with id ${req.params.id}`,
+						errorName: 'PostNotFound',
+						action: 'editPost',
+					}),
+				)
+			}
+
+			res.json(dateMapper(updatedPost))
+		} catch (err) {
+			return next(
+				new ResponseError({
+					status: 500,
+					message: 'unknown error',
+					action: 'updateMe',
+				}),
+			)
+		}
+	})
+	.delete('/:id', auth, async (req, res, next) => {
+		try {
+			const post = await prisma.post.findUnique({
+				where: {
+					id: req.params.id,
+				},
+			})
+
+			if (post === null) {
+				return next(
+					new ResponseError({
+						status: 404,
+						errorName: 'PostDoesNotExist',
+						message:
+							'the post you are trying to edit does not exist',
+						action: 'deletePost',
+					}),
+				)
+			}
+
+			const deletedPost = await prisma.post.delete({
+				select: {
+					...excludeContent,
+					content: true,
+				},
+				where: {
+					id: req.params.id,
+				},
+			})
+
+			if (deletedPost === null) {
+				return next(
+					new ResponseError({
+						status: 404,
+						message: `could not find post with id ${req.params.id}`,
+						errorName: 'PostNotFound',
+						action: 'deletePost',
+					}),
+				)
+			}
+
+			res.json(dateMapper(deletedPost))
+		} catch (err) {
+			return next(
+				new ResponseError({
+					status: 500,
+					message: 'unknown error',
+					action: 'deletePost',
 				}),
 			)
 		}
